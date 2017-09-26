@@ -8,14 +8,14 @@ import json
 modPath = "/home/steam/starbound/mods"
 
 def find_all_hash ():
-	mod_list = {}
+	mod_list_raw = {}
 	for filename in os.listdir(modPath):
 		if os.path.isdir(modPath + "/" + filename):
-			mod_list[filename] = get_folder_hash(filename)
+			mod_list_raw[filename] = get_folder_hash(filename)
 		else:
-			mod_list[filename] = get_file_hash(filename)
-	with open('result.json', 'w') as fp:
-		json.dump(mod_list, fp, indent=4, sort_keys=True)
+			mod_list_raw[filename] = get_file_hash(filename)
+	return mod_list_raw
+
 
 def get_folder_hash (filename):
 	hash = checksumdir.dirhash(modPath + "/" + filename)
@@ -28,4 +28,10 @@ def get_file_hash (filename):
 	md5Hashed = md5Hash.hexdigest()
 	return md5Hashed
 
-find_all_hash()
+def export_hash_json():
+	mod_list_raw = find_all_hash()
+	d = {"mods":[{'name':name,"hash":hashvalue} for name,hashvalue in mod_list_raw.items()]}
+	with open('mods.json', 'w') as fp:
+		json.dump(d, fp, indent=4)
+
+export_hash_json()
