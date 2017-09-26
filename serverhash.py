@@ -12,10 +12,8 @@ def find_all_hash ():
 	for filename in os.listdir(modPath):
 		if os.path.isdir(modPath + "/" + filename):
 			mod_list[filename] = get_folder_hash(filename)
-			#write_json()
 		else:
 			mod_list[filename] = get_file_hash(filename)
-			#write_json()
 	with open('result.json', 'w') as fp:
 		json.dump(mod_list, fp, indent=4, sort_keys=True)
 
