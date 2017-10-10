@@ -14,8 +14,7 @@ def find_all_hash ():
 			mod_list_raw[filename] = get_folder_hash(filename)
 		else:
 			mod_list_raw[filename] = get_file_hash(filename)
-	return mod_list_raw
-
+	print (mod_list_raw)
 
 def get_folder_hash (filename):
 	hash = checksumdir.dirhash(modPath + "/" + filename)
@@ -35,4 +34,5 @@ def export_hash_json():
 		json.dump(d, fp, indent=4)
 
 #export_hash_json()
-print (mod_list_raw)
+
+find_all_hash()
