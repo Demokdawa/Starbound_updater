@@ -4,6 +4,9 @@ import checksumdir
 import os
 import hashlib
 import json
+import grpc
+import starbound_pb2
+import starbound_pb2_grpc
 
 class RouteGuideServicer(starbound_pb2_grpc.RouteGuideServicer):
 
