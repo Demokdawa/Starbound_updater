@@ -5,6 +5,8 @@ import os
 import hashlib
 import json
 
+class RouteGuideServicer(starbound_pb2_grpc.RouteGuideServicer):
+
 modPath = "/home/steam/starbound/mods"
 
 def find_all_hash ():
@@ -15,7 +17,7 @@ def find_all_hash ():
 		else:
 			mod_list_raw[filename] = get_file_hash(filename)
 	print (mod_list_raw)
-	print ("Value : %s" %  mod_list_raw.items())
+	#print ("Value : %s" %  mod_list_raw.items())
 
 def get_folder_hash (filename):
 	hash = checksumdir.dirhash(modPath + "/" + filename)
@@ -28,11 +30,19 @@ def get_file_hash (filename):
 	md5Hashed = md5Hash.hexdigest()
 	return md5Hashed
 
-def export_hash_json():
-	mod_list_raw = find_all_hash()
-	d = {"mods":[{'name':name,"hash":hashvalue} for name,hashvalue in mod_list_raw.items()]}
-	with open('mods.json', 'w') as fp:
-		json.dump(d, fp, indent=4)
+def GetFeature(self, request, context):
+  feature = get_feature(self.db, request)
+  if feature is None:
+    return route_guide_pb2.Feature(name="", location=request)
+  else:
+    return feature
+
+def serve():
+  server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+  route_guide_pb2_grpc.add_RouteGuideServicer_to_server(
+      RouteGuideServicer(), server)
+  server.add_insecure_port('[::]:50051')
+  server.start()
 
 #export_hash_json()
 find_all_hash()
