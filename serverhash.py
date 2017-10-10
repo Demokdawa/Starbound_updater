@@ -35,4 +35,4 @@ def export_hash_json():
 
 #export_hash_json()
 find_all_hash()
-print ("Value : %s" %  dict.items())
+print ("Value : %s" %  mod_list_raw.items())
