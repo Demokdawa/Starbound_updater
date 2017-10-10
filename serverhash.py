@@ -15,7 +15,6 @@ def find_all_hash ():
 		else:
 			mod_list_raw[filename] = get_file_hash(filename)
 	return mod_list_raw
-	print (mod_list_raw)
 
 
 def get_folder_hash (filename):
@@ -35,4 +34,5 @@ def export_hash_json():
 	with open('mods.json', 'w') as fp:
 		json.dump(d, fp, indent=4)
 
-export_hash_json()
+#export_hash_json()
+print (mod_list_raw)
