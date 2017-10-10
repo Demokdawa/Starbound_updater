@@ -15,7 +15,7 @@ def GetFeature(self, request, context):
   else:
 	  return feature
 
-class RouteGuideServicer(starbound_pb2_grpc.RouteGuideServicer):
+class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 
 	modPath = "/home/steam/starbound/mods"
 
