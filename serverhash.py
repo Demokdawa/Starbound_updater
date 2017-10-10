@@ -11,9 +11,9 @@ import starbound_pb2_grpc
 def GetFeature(self, request, context):
   feature = get_feature(self.db, request)
   if feature is None:
-	return route_guide_pb2.Feature(name="", location=request)
+	  return route_guide_pb2.Feature(name="", location=request)
   else:
-	return feature
+	  return feature
 
 class RouteGuideServicer(starbound_pb2_grpc.RouteGuideServicer):
 
