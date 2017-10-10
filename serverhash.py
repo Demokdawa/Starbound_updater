@@ -34,5 +34,5 @@ def export_hash_json():
 		json.dump(d, fp, indent=4)
 
 #export_hash_json()
-
 find_all_hash()
+print ("Value : %s" %  dict.items())
