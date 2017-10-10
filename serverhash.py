@@ -15,6 +15,7 @@ def find_all_hash ():
 		else:
 			mod_list_raw[filename] = get_file_hash(filename)
 	return mod_list_raw
+	print mod_list_raw
 
 
 def get_folder_hash (filename):
