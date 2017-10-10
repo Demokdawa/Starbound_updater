@@ -8,6 +8,13 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
+def GetFeature(self, request, context):
+  feature = get_feature(self.db, request)
+  if feature is None:
+	return route_guide_pb2.Feature(name="", location=request)
+  else:
+	return feature
+
 class RouteGuideServicer(starbound_pb2_grpc.RouteGuideServicer):
 
 	modPath = "/home/steam/starbound/mods"
@@ -32,13 +39,6 @@ class RouteGuideServicer(starbound_pb2_grpc.RouteGuideServicer):
 		md5Hash = hashlib.md5(readFile)
 		md5Hashed = md5Hash.hexdigest()
 		return md5Hashed
-
-	def GetFeature(self, request, context):
-	  feature = get_feature(self.db, request)
-	  if feature is None:
-	    return route_guide_pb2.Feature(name="", location=request)
-	  else:
-	    return feature
 
 	def serve():
 	  server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
