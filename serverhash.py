@@ -28,7 +28,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
     modPath = '/home/steam/starbound/mods'
 
     def find_all_hash(self):
-        mod_list_raw = {}
+    	mod_list_raw = {}
         for filename in os.listdir(self.modPath):
             if os.path.isdir(self.modPath + '/' + filename):
                 mod_list_raw[filename] = \
@@ -50,19 +50,22 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         md5Hashed = md5Hash.hexdigest()
         return md5Hashed
 
-    def serve():
+def serve():
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         starbound_pb2_grpc.add_DictSenderServicer_to_server(DictSenderServicer(),
                 server)
         server.add_insecure_port('[::]:50051')
         server.start()
 		try:
-    	  while True:
-      	    time.sleep(_ONE_DAY_IN_SECONDS)
+    	    while True:
+      	      time.sleep(_ONE_DAY_IN_SECONDS)
         except KeyboardInterrupt:
-          server.stop(0)
+            server.stop(0)
+
+if __name__ == '__main__':
+  serve()
 
 
-servicer = DictSenderServicer()
-servicer.find_all_hash()
+#servicer = DictSenderServicer()
+#servicer.find_all_hash()
 #servicer.serve()
