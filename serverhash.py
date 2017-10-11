@@ -11,6 +11,9 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
+try:
+    while True:
+
 def send_dict(self, request, context):
   feature = get_feature(self.db, request)
   if feature is None:
@@ -18,7 +21,7 @@ def send_dict(self, request, context):
   else:
 	  return feature
 
-class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
+class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
 	modPath = "/home/steam/starbound/mods"
 
@@ -44,10 +47,13 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 
 	def serve():
 	  server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-	  route_guide_pb2_grpc.add_RouteGuideServicer_to_server(
-	      RouteGuideServicer(), server)
+	  starbound_pb2_grpc.add_DictSenderServicer_to_server(
+	      DictSenderServicer(), server)
 	  server.add_insecure_port('[::]:50051')
 	  server.start()
 
 servicer = RouteGuideServicer()
 servicer.find_all_hash()
+
+except KeyboardInterrupt:
+    pass
