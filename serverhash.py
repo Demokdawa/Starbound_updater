@@ -15,11 +15,11 @@ try:
     while True:
 
 	def send_dict(self, request, context):
-	  feature = get_feature(self.db, request)
-	  if feature is None:
-		  return starbound_pb2.Empty(name="", location=request)
+		feature = get_feature(self.db, request)
+	  	if feature is None:
+		  	return starbound_pb2.Empty(name="", location=request)
 	  else:
-		  return feature
+		  	return feature
 
 	class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
