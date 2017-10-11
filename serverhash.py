@@ -48,4 +48,4 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 	  server.start()
 
 	#export_hash_json()
-	find_all_hash()
+	find_all_hash(self)
