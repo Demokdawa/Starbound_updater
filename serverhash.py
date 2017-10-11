@@ -52,7 +52,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
 def serve():
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        starbound_pb2_grpc.add_DictSenderServicer_to_servertamer(DictSenderServicertamer(),
+        starbound_pb2_grpc.add_DictSenderServicer_to_server(DictSenderServicer(),
                 server)
         server.add_insecure_port('[::]:50051')
         server.start()
