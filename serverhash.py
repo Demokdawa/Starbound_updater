@@ -1,5 +1,8 @@
 from pathlib import Path
 from os import path
+from concurrent import futures
+import time
+import math
 import checksumdir
 import os
 import hashlib
@@ -8,10 +11,10 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
-def GetFeature(self, request, context):
+def send_dict(self, request, context):
   feature = get_feature(self.db, request)
   if feature is None:
-	  return starbound_pb2.Feature(name="", location=request)
+	  return starbound_pb2.Empty(name="", location=request)
   else:
 	  return feature
 
@@ -27,7 +30,6 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 			else:
 				mod_list_raw[filename] = self.get_file_hash(filename)
 		print (mod_list_raw)
-		#print ("Value : %s" %  mod_list_raw.items())
 
 	def get_folder_hash (self, filename):
 		hash = checksumdir.dirhash(self.modPath + "/" + filename)

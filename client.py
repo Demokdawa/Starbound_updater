@@ -1,3 +1,8 @@
+channel = grpc.insecure_channel('localhost:50051')
+stub = starbound_pb2_grpc.DictSenderStub(channel)
+
+feature = stub.send_dict(MyDict)
+
 A_dict = {'hash1' : "jsonobj1","hash2" : "jsonobj2"}
 B_dict = {'hash3' : "jsonobj3","hash2" : "jsonobj2"}
 setA = set(A_dict.keys())
