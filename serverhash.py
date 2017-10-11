@@ -56,7 +56,7 @@ def serve():
                 server)
         server.add_insecure_port('[::]:50051')
         server.start()
-		print ("Server started !")
+        print ("Server started !")
         try:
             while True:
                 time.sleep(_ONE_DAY_IN_SECONDS)
