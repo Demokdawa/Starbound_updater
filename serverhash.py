@@ -38,7 +38,7 @@ try:
                     else:
                         mod_list_raw[filename] = \
                             self.get_file_hash(filename)
-                print mod_list_raw
+                print (mod_list_raw)
 
             def get_folder_hash(self, filename):
                 hash = checksumdir.dirhash(self.modPath + '/'
