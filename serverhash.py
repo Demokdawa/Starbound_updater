@@ -47,5 +47,5 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 	  server.add_insecure_port('[::]:50051')
 	  server.start()
 
-	#export_hash_json()
-	find_all_hash(self)
+servicer = RouteGuideServicer()
+servicer.find_all_hash()
