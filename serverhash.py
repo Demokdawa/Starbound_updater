@@ -56,16 +56,14 @@ def serve():
                 server)
         server.add_insecure_port('[::]:50051')
         server.start()
-		try:
-    	    while True:
-      	        time.sleep(_ONE_DAY_IN_SECONDS)
+        try:
+            while True:
+                time.sleep(_ONE_DAY_IN_SECONDS)
         except KeyboardInterrupt:
             server.stop(0)
 
 if __name__ == '__main__':
     serve()
-
-
 #servicer = DictSenderServicer()
 #servicer.find_all_hash()
 #servicer.serve()
