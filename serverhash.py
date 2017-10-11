@@ -61,8 +61,9 @@ try:
                 server.start()
 
 
-        servicer = RouteGuideServicer()
+        servicer = DictSenderServicer()
         servicer.find_all_hash()
+		servicer.serve()
 except KeyboardInterrupt:
 
     pass
