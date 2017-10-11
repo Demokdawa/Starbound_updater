@@ -21,7 +21,7 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 
 	def find_all_hash (self):
 		mod_list_raw = {}
-		for filename in os.listdir(modPath):
+		for filename in os.listdir(self.modPath):
 			if os.path.isdir(modPath + "/" + filename):
 				mod_list_raw[filename] = self.get_folder_hash(filename)
 			else:
@@ -48,4 +48,4 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 	  server.start()
 
 	#export_hash_json()
-	find_all_hash(self)
+	self.find_all_hash()
