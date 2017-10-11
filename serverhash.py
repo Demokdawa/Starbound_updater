@@ -28,7 +28,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
     modPath = '/home/steam/starbound/mods'
 
     def find_all_hash(self):
-    	mod_list_raw = {}
+        mod_list_raw = {}
         for filename in os.listdir(self.modPath):
             if os.path.isdir(self.modPath + '/' + filename):
                 mod_list_raw[filename] = \
@@ -63,7 +63,7 @@ def serve():
             server.stop(0)
 
 if __name__ == '__main__':
-  serve()
+    serve()
 
 
 #servicer = DictSenderServicer()
