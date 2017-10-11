@@ -15,8 +15,6 @@ import starbound_pb2_grpc
 
 try:
     while True:
-
-
         def send_dict(self, request, context):
             feature = get_feature(self.db, request)
             if feature is None:
