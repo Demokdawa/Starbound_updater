@@ -17,12 +17,12 @@ def GetFeature(self, request, context):
 
 class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 
-	self.modPath = "/home/steam/starbound/mods"
+	modPath = "/home/steam/starbound/mods"
 
 	def find_all_hash (self):
 		mod_list_raw = {}
 		for filename in os.listdir(self.modPath):
-			if os.path.isdir(modPath + "/" + filename):
+			if os.path.isdir(self.modPath + "/" + filename):
 				mod_list_raw[filename] = self.get_folder_hash(filename)
 			else:
 				mod_list_raw[filename] = self.get_file_hash(filename)
@@ -30,11 +30,11 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 		#print ("Value : %s" %  mod_list_raw.items())
 
 	def get_folder_hash (self, filename):
-		hash = checksumdir.dirhash(modPath + "/" + filename)
+		hash = checksumdir.dirhash(self.modPath + "/" + filename)
 		return hash
 
 	def get_file_hash (self, filename):
-		openedFile = open(modPath + "/" + filename, 'rb')
+		openedFile = open(self.modPath + "/" + filename, 'rb')
 		readFile = openedFile.read()
 		md5Hash = hashlib.md5(readFile)
 		md5Hashed = md5Hash.hexdigest()
