@@ -22,9 +22,9 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 		mod_list_raw = {}
 		for filename in os.listdir(modPath):
 			if os.path.isdir(modPath + "/" + filename):
-				mod_list_raw[filename] = RouteGuideServicer.get_folder_hash(filename)
+				mod_list_raw[filename] = self.get_folder_hash(filename)
 			else:
-				mod_list_raw[filename] = RouteGuideServicer.get_file_hash(filename)
+				mod_list_raw[filename] = self.get_file_hash(filename)
 		print (mod_list_raw)
 		#print ("Value : %s" %  mod_list_raw.items())
 
