@@ -20,9 +20,10 @@ class RouteGuideServicer(starbound_pb2_grpc.DictSenderServicer):
 	modPath = "/home/steam/starbound/mods"
 
 	def find_all_hash ():
+		self.modPath = modPath
 		mod_list_raw = {}
-		for filename in os.listdir(self.modPath):
-			if os.path.isdir(self.modPath + "/" + filename):
+		for filename in os.listdir(modPath):
+			if os.path.isdir(modPath + "/" + filename):
 				mod_list_raw[filename] = self.get_folder_hash(filename)
 			else:
 				mod_list_raw[filename] = self.get_file_hash(filename)
