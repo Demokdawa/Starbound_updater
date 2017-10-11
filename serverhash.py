@@ -63,7 +63,7 @@ try:
 
         servicer = DictSenderServicer()
         servicer.find_all_hash()
-        servicer.serve()
+        #servicer.serve()
 except KeyboardInterrupt:
 
     pass
