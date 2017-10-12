@@ -38,7 +38,7 @@ def get_folder_hash(filename):
     return hash
 
 def get_file_hash(filename):
-    openedFile = open(modPath + "\\' + filename, 'rb')
+    openedFile = open(modPath + "\\" + filename, 'rb')
     readFile = openedFile.read()
     md5Hash = hashlib.md5(readFile)
     md5Hashed = md5Hash.hexdigest()
@@ -47,20 +47,20 @@ def get_file_hash(filename):
 client_dict = find_all_hash()
 serv_dict = get_serv_dict()
 
-setClient = set(find_all_hash().keys())
-setServ = set(get_serv_dict().keys())
+setClient = set(client_dict.keys())
+setServ = set(serv_dict.keys())
 
-print(setClient - setServ)
-print(setServ - setClient)
+only_client = setClient - setServ
+only_server = setServ - setClient
 
 #are only on client:
-items_only_in_client = list(setClient)
+items_only_in_client = list(only_client)
 for x in items_only_in_client:
 #    del A_dict[x]
-    print(client_dict[x])
+    print("Client seulement " + client_dict[x])
 
 #are only on serv:
-items_only_in_server = list(setServ)
+items_only_in_serv = list(only_server)
 for x in items_only_in_serv:
 #    download(sev_dict[x])
-    print(serv_dict[x])
+    print("Serveur seulement " + serv_dict[x])
