@@ -53,7 +53,7 @@ def get_file_hash(filename):
 #setB = set(B_dict.keys())
 
 setClient = set(get_serv_dict().keys())
-setServ = set(client_dict().keys())
+setServ = set(find_all_hash().keys())
 
 #print(setA - setB)
 #print(setB - setA)
