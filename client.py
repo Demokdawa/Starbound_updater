@@ -12,7 +12,7 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
-modPath = "C:\Program Files (x86)\Adobe\Acrobat DC"
+modPath = "C:\Users\Demokdawa\Documents\mods"
 
 def get_serv_dict():
     channel = grpc.insecure_channel('163.172.30.174:50051')
@@ -47,20 +47,23 @@ def get_file_hash(filename):
 client_dict = find_all_hash()
 serv_dict = get_serv_dict()
 
-setClient = set(client_dict.keys())
-setServ = set(serv_dict.keys())
+setClient = set(client_dict.items())
+setServ = set(serv_dict.items())
 
 only_client = setClient - setServ
 only_server = setServ - setClient
 
+print(only_client)
+print(only_server)
 #are only on client:
 items_only_in_client = list(only_client)
 for x in items_only_in_client:
-#    del A_dict[x]
-    print("Client seulement " + client_dict[x])
+    #print("Client seulement " + client_dict[x])
+    print(".")
+
 
 #are only on serv:
 items_only_in_serv = list(only_server)
 for x in items_only_in_serv:
-#    download(sev_dict[x])
-    print("Serveur seulement " + serv_dict[x])
+    #print("Serveur seulement " + serv_dict[x])
+    print(".")
