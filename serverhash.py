@@ -15,13 +15,9 @@ import starbound_pb2_grpc
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-MyDict = DictSenderServicer.find_all_hash()
-
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     modPath = '/home/steam/starbound/mods'
-
-    MyDict = find_all_hash()
 
     def send_dict(self, request, context):
         return starbound_pb2.Empty
