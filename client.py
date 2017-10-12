@@ -16,7 +16,7 @@ def run ():
     channel = grpc.insecure_channel('localhost:50051')
     stub = starbound_pb2_grpc.DictSenderStub(channel)
     dict_from_server = stub.send_dict(MyDict)
-    print (dict_from_server)
+    print (dict_from_server.message)
 
 
 if __name__ == '__main__':

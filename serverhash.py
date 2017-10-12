@@ -15,28 +15,26 @@ import starbound_pb2_grpc
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-def send_dict(self, request, context):
-    feature = get_feature(self.db, request)
-    if feature is None:
-        return starbound_pb2.Empty(name='', location=request)
-    else:
-        return feature
-
-
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     modPath = '/home/steam/starbound/mods'
 
+    MyDict = self.find_all_hash()
+
+    def send_dict(self, request, context):
+        return starbound_pb2.Empty
+
     def find_all_hash(self):
-        mod_list_raw = {}
+        MyDict = {}
         for filename in os.listdir(self.modPath):
             if os.path.isdir(self.modPath + '/' + filename):
-                mod_list_raw[filename] = \
+                MyDict[filename] = \
                     self.get_folder_hash(filename)
             else:
-                mod_list_raw[filename] = \
+                MyDict[filename] = \
                     self.get_file_hash(filename)
-        print (mod_list_raw)
+        print (MyDict)
+        return MyDict
 
     def get_folder_hash(self, filename):
         hash = checksumdir.dirhash(self.modPath + '/'
