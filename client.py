@@ -12,15 +12,12 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
-def run ():
-    channel = grpc.insecure_channel('localhost:50051')
-    stub = starbound_pb2_grpc.DictSenderStub(channel)
-    dict_from_server = stub.send_dict(MyDict)
-    print (dict_from_server.message)
+channel = grpc.insecure_channel('localhost:50051')
+stub = starbound_pb2_grpc.DictSenderStub(channel)
+response = stub.send_dict(starbound_pb2.Empty())
+dict_from_server = dict(response.dictionary)
+print(dict_from_server)
 
-
-if __name__ == '__main__':
-    run()
 #A_dict = {'hash1' : "jsonobj1","hash2" : "jsonobj2"}
 #B_dict = {'hash3' : "jsonobj3","hash2" : "jsonobj2"}
 #setA = set(A_dict.keys())

@@ -20,7 +20,8 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
     modPath = '/home/steam/starbound/mods'
 
     def send_dict(self, request, context):
-        return starbound_pb2.Empty
+        random_dict = {"key1" : "val1" ,"key2":"val2"}
+        return starbound_pb2.MyDict(dictionary=random_dict)
 
     def find_all_hash(self):
         MyDict = {}
