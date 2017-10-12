@@ -21,8 +21,8 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     def send_dict(self, request, context):
         random_dict = self.find_all_hash
-        return starbound_pb2.MyDict(dictionary=random_dict)
-        print (random_dict)
+        #return starbound_pb2.MyDict(dictionary=random_dict)
+        return random_dict
 
     def find_all_hash(self):
         MyDict = {}
@@ -55,6 +55,7 @@ def serve():
         server.add_insecure_port('[::]:50051')
         server.start()
         print ("Server started !")
+		print (send_dict())
         try:
             while True:
                 time.sleep(_ONE_DAY_IN_SECONDS)
