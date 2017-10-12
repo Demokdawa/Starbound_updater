@@ -15,14 +15,15 @@ import starbound_pb2_grpc
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
+modPath = '/home/steam/starbound/mods'
+
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     modPath = '/home/steam/starbound/mods'
 
     def send_dict(self, request, context):
         random_dict = self.find_all_hash
-        #return starbound_pb2.MyDict(dictionary=random_dict)
-        return random_dict
+        return starbound_pb2.MyDict(dictionary=random_dict)
 
     def find_all_hash(self):
         MyDict = {}
@@ -55,15 +56,38 @@ def serve():
         server.add_insecure_port('[::]:50051')
         server.start()
         print ("Server started !")
-        print (DictSenderServicer.find_all_hash(self))
         try:
             while True:
                 time.sleep(_ONE_DAY_IN_SECONDS)
         except KeyboardInterrupt:
             server.stop(0)
 
+def find_all_hash():
+	MyDict = {}
+	for filename in os.listdir(modPath):
+		if os.path.isdir(modPath + '/' + filename):
+			MyDict[filename] = \
+				get_folder_hash(filename)
+		else:
+			MyDict[filename] = \
+				get_file_hash(filename)
+	print (MyDict)
+	return MyDict
+
+def get_folder_hash(filename):
+	hash = checksumdir.dirhash(modPath + '/'
+			+ filename)
+	return hash
+
+def get_file_hash(filename):
+	openedFile = open(modPath + '/' + filename, 'rb')
+	readFile = openedFile.read()
+	md5Hash = hashlib.md5(readFile)
+	md5Hashed = md5Hash.hexdigest()
+	return md5Hashed
+
 if __name__ == '__main__':
-    serve()
+    find_all_hash()
 #servicer = DictSenderServicer()
 #servicer.find_all_hash()
 #servicer.serve()
