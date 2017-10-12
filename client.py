@@ -12,7 +12,7 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
-channel = grpc.insecure_channel('localhost:50051')
+channel = grpc.insecure_channel('163.172.30.174:50051')
 stub = starbound_pb2_grpc.DictSenderStub(channel)
 response = stub.send_dict(starbound_pb2.Empty())
 dict_from_server = dict(response.dictionary)
