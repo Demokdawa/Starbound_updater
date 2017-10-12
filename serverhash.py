@@ -55,7 +55,7 @@ def serve():
         server.add_insecure_port('[::]:50051')
         server.start()
         print ("Server started !")
-        print (DictSenderServicer.send_dict())
+        print (DictSenderServicer.find_all_hash())
         try:
             while True:
                 time.sleep(_ONE_DAY_IN_SECONDS)
