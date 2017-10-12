@@ -12,6 +12,8 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
+modPath = '/home/steam/starbound/mods'
+
 def get_serv_dict():
     channel = grpc.insecure_channel('163.172.30.174:50051')
     stub = starbound_pb2_grpc.DictSenderStub(channel)
