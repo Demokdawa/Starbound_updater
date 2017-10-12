@@ -24,7 +24,7 @@ def get_serv_dict():
 def find_all_hash():
     client_dict = {}
     for filename in os.listdir(modPath):
-        if os.path.isdir(modPath + '\' + filename):
+        if os.path.isdir(modPath + "\\" + filename):
             client_dict[filename] = \
                 get_folder_hash(filename)
         else:
@@ -44,21 +44,8 @@ def get_file_hash(filename):
     md5Hashed = md5Hash.hexdigest()
     return md5Hashed
 
-
-#A_dict = {'hash1' : "jsonobj1","hash2" : "jsonobj2"}
-#B_dict = {'hash3' : "jsonobj3","hash2" : "jsonobj2"}
-
-#client_dict = {'hash1' : "jsonobj1","hash2" : "jsonobj2"}
-#serv_dict = {'hash3' : "jsonobj3","hash2" : "jsonobj2"}
-
-#setA = set(A_dict.keys())
-#setB = set(B_dict.keys())
-
 setClient = set(get_serv_dict().keys())
 setServ = set(find_all_hash().keys())
-
-#print(setA - setB)
-#print(setB - setA)
 
 print(setClient - setServ)
 print(setServ - setClient)
