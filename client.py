@@ -51,10 +51,13 @@ print(setClient - setServ)
 print(setServ - setClient)
 
 #are only on a:
-#items_only_in_a = list(setA)
-#for x in items_only_in_a:
-#    del A_dict[x]
+items_only_in_a = list(setA)
+for x in items_only_in_a:
+    #del A_dict[x]
+    print (A_dict[x])
 
-#items_only_in_b = list(setB)
-#for x in items_only_in_b:
-#    download(B_dict[x])
+#are only on b:
+items_only_in_b = list(setB)
+for x in items_only_in_b:
+    #download(B_dict[x])
+    print (B_dict[x])
