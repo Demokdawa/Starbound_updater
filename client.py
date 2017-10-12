@@ -53,17 +53,29 @@ setServ = set(serv_dict.items())
 only_client = setClient - setServ
 only_server = setServ - setClient
 
-print(only_client)
-print(only_server)
+# make sure all files on the server are on the client
+for filename, server_hash in server_dict.items():
+    client_hash = client_dict.get(filename)
+    if client_hash != server_hash:
+        print(filename)
+
+# remove extras
+extra_files = set(client_dict) - set(server_dict)
+for f in extra_files:
+    print(f)
+
+
+#print(only_client)
+#print(only_server)
 #are only on client:
-items_only_in_client = list(only_client)
-for x in items_only_in_client:
+#items_only_in_client = list(only_client)
+#for x in items_only_in_client:
     #print("Client seulement " + client_dict[x])
-    print(".")
+    #print(".")
 
 
 #are only on serv:
-items_only_in_serv = list(only_server)
-for x in items_only_in_serv:
+#items_only_in_serv = list(only_server)
+#for x in items_only_in_serv:
     #print("Serveur seulement " + serv_dict[x])
-    print(".")
+    #print(".")
