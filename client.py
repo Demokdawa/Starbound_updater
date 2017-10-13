@@ -12,7 +12,7 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
-modPath = "C:\Users\TOTO\Documents\mods"
+modPath = "C:\\Users\\Demokdawa\\Documents\\mods"
 
 def get_serv_dict():
     channel = grpc.insecure_channel('163.172.30.174:50051')
