@@ -12,7 +12,7 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
-modPath = "C:\Users\Demokdawa\Documents\mods"
+modPath = "C:\Users\TOTO\Documents\mods"
 
 def get_serv_dict():
     channel = grpc.insecure_channel('163.172.30.174:50051')
@@ -21,48 +21,42 @@ def get_serv_dict():
     serv_dict = dict(response.dictionary)
     return serv_dict
 
-def find_all_hash():
-    client_dict = {}
-    for filename in os.listdir(modPath):
-        if os.path.isdir(modPath + "\\" + filename):
-            client_dict[filename] = \
-                get_folder_hash(filename)
+def find_all_hash(target_path):
+    hash_dict = {}
+    for filename in os.listdir(target_path):
+        if os.path.isdir(target_path + "\\" + filename):
+            hash_dict[filename] = \
+                get_folder_hash(target_path, filename)
         else:
-            client_dict[filename] = \
-                get_file_hash(filename)
-    return client_dict
+            hash_dict[filename] = \
+                get_file_hash(target_path, filename)
+    return hash_dict
 
-def get_folder_hash(filename):
-    hash = checksumdir.dirhash(modPath + "\\"
+def get_folder_hash(target_path, filename):
+    hash = checksumdir.dirhash(target_path + "\\"
             + filename)
     return hash
 
-def get_file_hash(filename):
-    openedFile = open(modPath + "\\" + filename, 'rb')
+def get_file_hash(target_path, filename):
+    openedFile = open(target_path + "\\" + filename, 'rb')
     readFile = openedFile.read()
     md5Hash = hashlib.md5(readFile)
     md5Hashed = md5Hash.hexdigest()
     return md5Hashed
 
-client_dict = find_all_hash()
+client_dict = find_all_hash(modPath)
 serv_dict = get_serv_dict()
 
-setClient = set(client_dict.items())
-setServ = set(serv_dict.items())
-
-only_client = setClient - setServ
-only_server = setServ - setClient
-
 # make sure all files on the server are on the client
-for filename, server_hash in server_dict.items():
-    client_hash = client_dict.get(filename)
+for filename_download, server_hash in serv_dict.items():
+    client_hash = client_dict.get(filename_download)
     if client_hash != server_hash:
-        print(filename)
+        print(filename_download)
 
 # remove extras
-extra_files = set(client_dict) - set(server_dict)
-for f in extra_files:
-    print(f)
+extra_files = set(client_dict) - set(serv_dict)
+for filename_delete in extra_files:
+    print(filename_delete)
 
 
 #print(only_client)
