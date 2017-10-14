@@ -11,6 +11,7 @@ import json
 import grpc
 import starbound_pb2
 import starbound_pb2_grpc
+import pysftp
 
 modPath = "C:\\Users\\Demokdawa\\Documents\\mods"
 
@@ -44,6 +45,15 @@ def get_file_hash(target_path, filename):
     md5Hashed = md5Hash.hexdigest()
     return md5Hashed
 
+def download_file(filename_download):
+
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+
+    srv = pysftp.Connection(host="163.172.30.174", username="root", password="Darkbarjot78", cnopts=cnopts)
+
+    srv.get("/home/steam/starbound/mods/" + filename_download)
+
 client_dict = find_all_hash(modPath)
 serv_dict = get_serv_dict()
 
@@ -51,25 +61,12 @@ serv_dict = get_serv_dict()
 for filename_download, server_hash in serv_dict.items():
     client_hash = client_dict.get(filename_download)
     if client_hash != server_hash:
-        print(filename_download)
+        download_file(filename_download)
 
 # remove extras
 extra_files = set(client_dict) - set(serv_dict)
 for filename_delete in extra_files:
     print(filename_delete)
 
-
-#print(only_client)
-#print(only_server)
-#are only on client:
-#items_only_in_client = list(only_client)
-#for x in items_only_in_client:
-    #print("Client seulement " + client_dict[x])
-    #print(".")
-
-
-#are only on serv:
-#items_only_in_serv = list(only_server)
-#for x in items_only_in_serv:
-    #print("Serveur seulement " + serv_dict[x])
-    #print(".")
+srv = pysftp.Connection(host="163.172.30.174", username="root", password="Darkbarjot78", cnopts=cnopts)
+srv.close()
