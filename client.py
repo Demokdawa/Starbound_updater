@@ -45,28 +45,19 @@ def get_file_hash(target_path, filename):
     md5Hashed = md5Hash.hexdigest()
     return md5Hashed
 
-def download_file(filename_download):
+def remove_extra_files(client_dict_input, serv_dict_input):
+    extra_files = set(client_dict_input) - set(serv_dict_input)
+    for filename_delete in extra_files:
+        print(filename_delete)
 
-    cnopts = pysftp.CnOpts()
-    cnopts.hostkeys = None
-
-    srv = pysftp.Connection(host="163.172.30.174", username="root", password="Darkbarjot78", cnopts=cnopts)
-
-    srv.get("/home/steam/starbound/mods/" + filename_download)
+def download_extra_files(client_dict_input, serv_dict_input):
+    for filename_download, server_hash in serv_dict_input.items():
+        client_hash = client_dict_input.get(filename_download)
+        if client_hash != server_hash:
+            print(filename_download)
 
 client_dict = find_all_hash(modPath)
 serv_dict = get_serv_dict()
 
-# make sure all files on the server are on the client
-for filename_download, server_hash in serv_dict.items():
-    client_hash = client_dict.get(filename_download)
-    if client_hash != server_hash:
-        download_file(filename_download)
-
-# remove extras
-extra_files = set(client_dict) - set(serv_dict)
-for filename_delete in extra_files:
-    print(filename_delete)
-
-srv = pysftp.Connection(host="163.172.30.174", username="root", password="Darkbarjot78", cnopts=cnopts)
-srv.close()
+remove_extra_files(client_dict, serv_dict)
+download_extra_files(client_dict, serv_dict)
