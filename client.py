@@ -21,7 +21,7 @@ cnopts.hostkeys = None
 sftp_serv = pysftp.Connection(host="163.172.30.174", username="root",password="Darkbarjot78", cnopts=cnopts)
 
 def get_serv_dict():
-    print("Recupération des informations serveur...")
+    print("Recuperation des informations serveur...", flush=True)
     channel = grpc.insecure_channel('163.172.30.174:50051')
     stub = starbound_pb2_grpc.DictSenderStub(channel)
     response = stub.send_dict(starbound_pb2.Empty())
@@ -31,7 +31,7 @@ def get_serv_dict():
 
 def find_all_hash(target_path):
     hash_dict = {}
-    print("Recupération des informations locales...")
+    print("Recuperation des informations locales...", flush=True)
     for filename in os.listdir(target_path):
         if os.path.isdir(target_path + filename):
             hash_dict[filename] = \
@@ -56,23 +56,23 @@ def get_file_hash(target_path, filename):
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):
     extra_files = set(client_dict_input) - set(serv_dict_input)
     for filename_delete in extra_files:
-        print("Suppresion de " + filename_delete)
+        print("Suppresion de " + filename_delete, flush=True)
         if os.path.isfile(target_path + filename_delete):
             os.remove(target_path + filename_delete)
         elif os.path.isdir(target_path + filename_delete + "\\"):
             shutil.rmtree(target_path + filename_delete + "\\", ignore_errors=True)
         else:
-            print("Erreur lors de la suppression de" + filename_delete)
+            print("Erreur lors de la suppression de" + filename_delete, flush=True)
 
 def download_extra_files(target_path, remote_path, client_dict_input, serv_dict_input, sftp_serv):
     for filename_download, server_hash in serv_dict_input.items():
         client_hash = client_dict_input.get(filename_download)
         if client_hash != server_hash:
             if os.path.splitext(target_path + filename_download)[1] == ".pak":
-                print("Telechargement de " + filename_download)
+                print("Telechargement de " + filename_download, flush=True)
                 download_file(target_path, remote_path, filename_download, sftp_serv)
             else :
-                print("Telechargement de " + filename_download)
+                print("Telechargement de " + filename_download, flush=True)
                 download_folder(target_path, remote_path, filename_download, sftp_serv)
 
 def download_file(target_path, remote_path, name_to_dl, sftp_serv):
@@ -95,13 +95,13 @@ def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
         else:
             download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
 
-if os.path.isfile(installPath + "\\" + "Starbound.exe"):
-    print("Dossier officiel starbound detecté !")
+if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
+    print("Dossier officiel starbound detecte !", flush=True)
     sleep(3)
     client_dict = find_all_hash(modPath)
     serv_dict = get_serv_dict()
     #remove_extra_files(modPath, client_dict, serv_dict)
     download_extra_files(modPath, remotePath, client_dict, serv_dict, sftp_serv)
 else :
-    print("Le script n'est pas place dans le dossier Starbound !")
+    print("Le script n'est pas place dans le dossier Starbound !", flush=True)
     sleep(3)
