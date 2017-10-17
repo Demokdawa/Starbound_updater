@@ -62,6 +62,3 @@ def serve():
 
 if __name__ == '__main__':
     serve()
-#servicer = DictSenderServicer()
-#servicer.find_all_hash()
-#servicer.serve()

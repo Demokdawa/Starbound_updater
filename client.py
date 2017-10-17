@@ -72,13 +72,13 @@ def download_extra_files(target_path, client_dict_input, serv_dict_input):
                 print(filename_download)
 
 def download_file(target_path, url):
-    local_filename = url.split('/')[-1]
+    downloaded_file = url.split('/')[-1]
     r = requests.get(url, stream=True)
-    with open(target_path + local_filename, 'wb') as f:
+    with open(target_path + downloaded_file, 'wb') as f:
         for chunk in r.iter_content(chunk_size=256):
             if chunk:
                 f.write(chunk)
-    return local_filename
+    return downloaded_file
 
 if os.path.isfile(installPath + "\\" + "Starbound.exe"):
     print("Dossier officiel starbound detecté !")
