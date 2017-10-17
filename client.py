@@ -70,30 +70,30 @@ def download_extra_files(target_path, remote_path, client_dict_input, serv_dict_
         if client_hash != server_hash:
             if os.path.splitext(target_path + filename_download)[1] == ".pak":
                 print("Telechargement de " + filename_download)
-                print(download_file(target_path, remote_path, filename_download, sftp_serv))
+                download_file(target_path, remote_path, filename_download, sftp_serv)
             else :
                 print("Telechargement de " + filename_download)
-                print(download_folder(target_path, remote_path, filename_download, sftp_serv))
+                download_folder(target_path, remote_path, filename_download, sftp_serv)
 
 def download_file(target_path, remote_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = remote_path + name_to_dl
-    sftp.get(remote_path_from_dl, local_path_to_dl)
+    sftp_serv.get(remote_path_from_dl, local_path_to_dl)
 
 def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
-    local_path = target_path + dirpath
-    full_path = main_path + dirpath
-    if not sftp.exists(full_path):
+    local_path_to_dl = target_path + name_to_dl
+    remote_path_from_dl = remote_path + name_to_dl
+    if not sftp_serv.exists(remote_path_from_dl):
         return
-    if not os.path.exists(local_path):
-        os.makedirs(local_path)
+    if not os.path.exists(local_path_to_dl):
+        os.makedirs(local_path_to_dl)
 
-    dirlist = sftp.listdir(remotepath=full_path)
+    dirlist = sftp_serv.listdir(remotepath=remote_path_from_dl)
     for i in dirlist:
-        if sftp.isdir(full_path + '/' + i):
-            grab_dir_rec(sftp, dirpath + '/' + i)
+        if sftp_serv.isdir(remote_path_from_dl + '/' + i):
+            download_folder(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
         else:
-            grab_file(sftp, dirpath + '/' + i)
+            download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
 
 if os.path.isfile(installPath + "\\" + "Starbound.exe"):
     print("Dossier officiel starbound detecté !")
