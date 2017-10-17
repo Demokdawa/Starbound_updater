@@ -1,4 +1,5 @@
-import requests
+import os
+from os import path
 
 def download_file(url):
     local_filename = url.split('/')[-1]
@@ -11,4 +12,7 @@ def download_file(url):
                 #f.flush() commented by recommendation from J.F.Sebastian
     return local_filename
 	
-download_file('https://zenmap.xyz/mods/food_stack.pak')
+#download_file('https://zenmap.xyz/mods/food_stack.pak')
+
+var = os.path.splitext("C:\\Users\\PRAN152\\Documents\\GitHub\\Starbound_updater\\serverhash.py")
+print (var)
