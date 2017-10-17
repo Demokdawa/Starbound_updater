@@ -2,7 +2,7 @@ from __future__ import print_function
 from pathlib import Path
 from os import path
 from concurrent import futures
-import time
+from time import sleep
 import math
 import checksumdir
 import hashlib
@@ -12,7 +12,6 @@ import starbound_pb2_grpc
 import sys, os
 import shutil
 
-#modPath = "C:\\Users\\PRAN152\\Documents\\mods"
 modPath = os.getcwd()
 
 def get_serv_dict():
@@ -62,8 +61,12 @@ def download_extra_files(client_dict_input, serv_dict_input):
         if client_hash != server_hash:
             print(filename_download)
 
-client_dict = find_all_hash(modPath)
-serv_dict = get_serv_dict()
-
-#remove_extra_files(modPath, client_dict, serv_dict)
-download_extra_files(client_dict, serv_dict)
+if os.path.isfile(modPath + "\\" + "file.txt"):
+    print("Dossier officiel starbound detecté !")
+    sleep(2)
+    client_dict = find_all_hash(modPath)
+    serv_dict = get_serv_dict()
+    #remove_extra_files(modPath, client_dict, serv_dict)
+    download_extra_files(client_dict, serv_dict)
+else :
+    print("Le script n'est pas placé dans le dossier Starbound !")
