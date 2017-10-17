@@ -55,6 +55,9 @@ def get_file_hash(target_path, filename):
 
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):
     extra_files = set(client_dict_input) - set(serv_dict_input)
+    print(set(client_dict_input), flush=True)
+    print(set(serv_dict_input), flush=True)
+    print(extra_files, flush=True)
     for filename_delete in extra_files:
         print("Suppresion de " + filename_delete, flush=True)
         if os.path.isfile(target_path + filename_delete):
