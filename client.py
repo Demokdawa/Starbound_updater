@@ -5,15 +5,15 @@ from concurrent import futures
 import time
 import math
 import checksumdir
-import os
 import hashlib
-import json
 import grpc
 import starbound_pb2
 import starbound_pb2_grpc
-import pysftp
+import sys, os
+import shutil
 
-modPath = "C:\\Users\\Demokdawa\\Documents\\mods"
+#modPath = "C:\\Users\\PRAN152\\Documents\\mods"
+modPath = os.getcwd()
 
 def get_serv_dict():
     channel = grpc.insecure_channel('163.172.30.174:50051')
@@ -45,10 +45,16 @@ def get_file_hash(target_path, filename):
     md5Hashed = md5Hash.hexdigest()
     return md5Hashed
 
-def remove_extra_files(client_dict_input, serv_dict_input):
+def remove_extra_files(target_path, client_dict_input, serv_dict_input):
     extra_files = set(client_dict_input) - set(serv_dict_input)
     for filename_delete in extra_files:
-        print(filename_delete)
+        print("Suppresion de " + filename_delete)
+        if os.path.isfile(target_path + "\\" + filename_delete):
+            os.remove(target_path + "\\" + filename_delete)
+        elif os.path.isdir(target_path + "\\"):
+            shutil.rmtree(target_path + "\\", ignore_errors=True)
+        else:
+            print("Erreur lors de la suppression de" + filename_delete)
 
 def download_extra_files(client_dict_input, serv_dict_input):
     for filename_download, server_hash in serv_dict_input.items():
@@ -59,5 +65,5 @@ def download_extra_files(client_dict_input, serv_dict_input):
 client_dict = find_all_hash(modPath)
 serv_dict = get_serv_dict()
 
-remove_extra_files(client_dict, serv_dict)
+#remove_extra_files(modPath, client_dict, serv_dict)
 download_extra_files(client_dict, serv_dict)
