@@ -54,10 +54,6 @@ def get_file_hash(target_path, filename):
     return md5Hashed
 
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):
-    #extra_files = set(client_dict_input) - set(serv_dict_input)
-    #print(set(client_dict_input), flush=True)
-    #print(set(serv_dict_input), flush=True)
-    #print(extra_files, flush=True)
     for filename_delete, client_hash in client_dict_input.items():
         server_hash = serv_dict_input.get(filename_delete)
         if server_hash != client_hash:
@@ -104,11 +100,9 @@ if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
     print("Dossier officiel starbound detecte !", flush=True)
     sleep(3)
     client_dict = find_all_hash(modPath)
-    print(client_dict, flush=True)
     serv_dict = get_serv_dict()
-    print(serv_dict, flush=True)
     remove_extra_files(modPath, client_dict, serv_dict)
-    #download_extra_files(modPath, remotePath, client_dict, serv_dict, sftp_serv)
+    download_extra_files(modPath, remotePath, client_dict, serv_dict, sftp_serv)
     print("Mise a jour terminee !", flush=True)
 else :
     print("Le script n'est pas place dans le dossier Starbound !", flush=True)
