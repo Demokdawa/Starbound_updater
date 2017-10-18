@@ -18,6 +18,7 @@ modPath = os.getcwd() + "\\mods\\"
 remotePath = "/home/steam/starbound/mods/"
 cnopts = pysftp.CnOpts()
 cnopts.hostkeys = None
+cnopts.compression = True
 sftp_serv = pysftp.Connection(host="163.172.30.174", username="root",password="Darkbarjot78", cnopts=cnopts)
 
 def get_serv_dict():
