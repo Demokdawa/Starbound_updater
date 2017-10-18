@@ -54,18 +54,20 @@ def get_file_hash(target_path, filename):
     return md5Hashed
 
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):
-    extra_files = set(client_dict_input) - set(serv_dict_input)
-    print(set(client_dict_input), flush=True)
-    print(set(serv_dict_input), flush=True)
-    print(extra_files, flush=True)
-    for filename_delete in extra_files:
-        print("Suppresion de " + filename_delete, flush=True)
-        if os.path.isfile(target_path + filename_delete):
-            os.remove(target_path + filename_delete)
-        elif os.path.isdir(target_path + filename_delete + "\\"):
-            shutil.rmtree(target_path + filename_delete + "\\", ignore_errors=True)
-        else:
-            print("Erreur lors de la suppression de" + filename_delete, flush=True)
+    #extra_files = set(client_dict_input) - set(serv_dict_input)
+    #print(set(client_dict_input), flush=True)
+    #print(set(serv_dict_input), flush=True)
+    #print(extra_files, flush=True)
+    for filename_delete, client_hash in client_dict_input.items():
+        server_hash = serv_dict_input.get(filename_delete)
+        if server_hash != client_hash:
+            print("Suppresion de " + filename_delete, flush=True)
+            if os.path.isfile(target_path + filename_delete):
+                os.remove(target_path + filename_delete)
+            elif os.path.isdir(target_path + filename_delete + "\\"):
+                shutil.rmtree(target_path + filename_delete + "\\", ignore_errors=True)
+            else:
+                print("Erreur lors de la suppression de" + filename_delete, flush=True)
 
 def download_extra_files(target_path, remote_path, client_dict_input, serv_dict_input, sftp_serv):
     for filename_download, server_hash in serv_dict_input.items():
