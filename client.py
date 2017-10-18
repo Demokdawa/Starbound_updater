@@ -17,12 +17,7 @@ import ftputil
 
 installPath = os.getcwd()
 modPath = os.getcwd() + "\\mods\\"
-#remotePath = "/home/steam/starbound/mods/"
 remotePath = "/starbound/mods/"
-cnopts = pysftp.CnOpts()
-cnopts.hostkeys = None
-cnopts.compression = True
-#sftp_serv = pysftp.Connection(host="163.172.30.174", username="root",password="Darkbarjot78", cnopts=cnopts)
 sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
 
 def get_serv_dict():
@@ -84,7 +79,6 @@ def download_extra_files(target_path, remote_path, client_dict_input, serv_dict_
 def download_file(target_path, remote_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = remote_path + name_to_dl
-    #sftp_serv.get(remote_path_from_dl, local_path_to_dl)
     sftp_serv.download(remote_path_from_dl, local_path_to_dl)
 
 def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
