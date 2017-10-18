@@ -3,6 +3,7 @@ from pathlib import Path
 from os import path
 from concurrent import futures
 from time import sleep
+from ftplib import FTP
 import math
 import checksumdir
 import hashlib
@@ -12,14 +13,17 @@ import starbound_pb2_grpc
 import sys, os
 import shutil
 import pysftp
+import ftputil
 
 installPath = os.getcwd()
 modPath = os.getcwd() + "\\mods\\"
-remotePath = "/home/steam/starbound/mods/"
+#remotePath = "/home/steam/starbound/mods/"
+remotePath = "/starbound/mods/"
 cnopts = pysftp.CnOpts()
 cnopts.hostkeys = None
 cnopts.compression = True
-sftp_serv = pysftp.Connection(host="163.172.30.174", username="root",password="Darkbarjot78", cnopts=cnopts)
+#sftp_serv = pysftp.Connection(host="163.172.30.174", username="root",password="Darkbarjot78", cnopts=cnopts)
+sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
 
 def get_serv_dict():
     print("Recuperation des informations serveur...", flush=True)
@@ -58,7 +62,7 @@ def remove_extra_files(target_path, client_dict_input, serv_dict_input):
     for filename_delete, client_hash in client_dict_input.items():
         server_hash = serv_dict_input.get(filename_delete)
         if server_hash != client_hash:
-            print("Suppresion de " + filename_delete, flush=True)
+            print("Suppression de " + filename_delete, flush=True)
             if os.path.isfile(target_path + filename_delete):
                 os.remove(target_path + filename_delete)
             elif os.path.isdir(target_path + filename_delete + "\\"):
@@ -80,19 +84,20 @@ def download_extra_files(target_path, remote_path, client_dict_input, serv_dict_
 def download_file(target_path, remote_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = remote_path + name_to_dl
-    sftp_serv.get(remote_path_from_dl, local_path_to_dl)
+    #sftp_serv.get(remote_path_from_dl, local_path_to_dl)
+    sftp_serv.download(remote_path_from_dl, local_path_to_dl)
 
 def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = remote_path + name_to_dl
-    if not sftp_serv.exists(remote_path_from_dl):
+    if not sftp_serv.path.exists(remote_path_from_dl):
         return
     if not os.path.exists(local_path_to_dl):
         os.makedirs(local_path_to_dl)
 
-    dirlist = sftp_serv.listdir(remotepath=remote_path_from_dl)
+    dirlist = sftp_serv.listdir(remote_path_from_dl)
     for i in dirlist:
-        if sftp_serv.isdir(remote_path_from_dl + '/' + i):
+        if sftp_serv.path.isdir(remote_path_from_dl + '/' + i):
             download_folder(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
         else:
             download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)

@@ -1,2 +1,4 @@
 **/mods/
 *.txt
+win64/Starbound.exe
+npm-debug.log
