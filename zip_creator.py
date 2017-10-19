@@ -9,9 +9,9 @@ target_path = os.getcwd() + "/mods/"
 
 for filename in os.listdir(target_path):
     if os.path.isdir(target_path + filename):
-        os.remove(installPath + "/zips/" + filename + "zip")
+        os.remove(installPath + "/zips/" + filename + ".zip")
         shutil.make_archive(filename, "zip", target_path, filename)
         shutil.move(installPath + "/" + filename + ".zip", installPath + "/zips/" + filename + ".zip")
-        print (filename + "archivé !")
+        print (filename + "   [Archivé] !")
 
 print ("Terminé !")
