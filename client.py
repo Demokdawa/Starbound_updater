@@ -75,7 +75,6 @@ def download_extra_files(target_path, remote_path, zip_folder, client_dict_input
                 download_file(target_path, remote_path, filename_download, sftp_serv)
             else :
                 print("Telechargement de " + filename_download, flush=True)
-                #download_folder(target_path, remote_path, filename_download, sftp_serv)
                 download_zip_and_extract(target_path, zip_folder, filename_download + ".zip", sftp_serv)
 
 def download_file(target_path, remote_path, name_to_dl, sftp_serv):
