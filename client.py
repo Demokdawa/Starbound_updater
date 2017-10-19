@@ -107,14 +107,15 @@ def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
         else:
             download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
 
-if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
-    print("Dossier officiel starbound detecte !", flush=True)
-    sleep(3)
-    client_dict = find_all_hash(modPath)
-    serv_dict = get_serv_dict()
-    remove_extra_files(modPath, client_dict, serv_dict)
-    download_extra_files(modPath, remotePath, zipFolder, client_dict, serv_dict, sftp_serv)
-    print("Mise a jour terminee !", flush=True)
-else :
-    print("Le script n'est pas place dans le dossier Starbound !", flush=True)
-    sleep(3)
+if __name__ == '__main__':
+    if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
+        print("Dossier officiel starbound detecte !", flush=True)
+        sleep(3)
+        client_dict = find_all_hash(modPath)
+        serv_dict = get_serv_dict()
+        remove_extra_files(modPath, client_dict, serv_dict)
+        download_extra_files(modPath, remotePath, zipFolder, client_dict, serv_dict, sftp_serv)
+        print("Mise a jour terminee !", flush=True)
+    else :
+        print("Le script n'est pas place dans le dossier Starbound !", flush=True)
+        sleep(3)
