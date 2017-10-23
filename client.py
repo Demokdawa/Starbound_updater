@@ -88,8 +88,8 @@ def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv):
     sftp_serv.download(remote_path_from_dl, local_path_to_dl)
 
     with zipfile.ZipFile(local_path_to_dl,"r") as zip_ref:
+        zip_ref.debug = 3
         zip_ref.extractall(target_path)
-
     os.remove(local_path_to_dl)
 
 def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
