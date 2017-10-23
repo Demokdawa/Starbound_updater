@@ -6,3 +6,4 @@ npm-debug.log
 *.pyc
 *.pyc
 *.exe
+__pycache__
