@@ -16,10 +16,11 @@ import ftputil
 import zipfile
 
 installPath = os.getcwd()
-modPath = os.getcwd() + "\\mods\\"
+modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
 sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
 zipFolder = "/starbound/zips/"
+backup_folder = "/starbound/backups/"
 
 def get_serv_dict():
     print("Recuperation des informations serveur...", flush=True)
@@ -106,6 +107,11 @@ def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
             download_folder(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
         else:
             download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
+
+def backup_char():
+    local_save = installPath + "\\storage\\player\\"
+    print("Sauvegarde du personnage...", flush=True)
+    sftp_serv.upload(source, target)
 
 if __name__ == '__main__':
     if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
