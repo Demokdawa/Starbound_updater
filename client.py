@@ -108,15 +108,19 @@ def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
         else:
             download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
 
-def backup_char():
+def backup_char(local_path, remote_bck__folder, sftp_serv):
     local_save = installPath + "\\storage\\player\\"
     print("Sauvegarde du personnage...", flush=True)
-    sftp_serv.upload(source, target)
+    for filename in os.listdir():
+        sftp_serv.upload(local_save + filename, remote_folder + filename)
+    print("Terminé !", flush=True)
 
 if __name__ == '__main__':
     if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
         print("Dossier officiel starbound detecte !", flush=True)
         sleep(3)
+        backup_char(installPath, backup_folder, sftp_serv)
+        sleep(2)
         client_dict = find_all_hash(modPath)
         serv_dict = get_serv_dict()
         remove_extra_files(modPath, client_dict, serv_dict)
