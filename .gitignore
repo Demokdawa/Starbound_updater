@@ -7,3 +7,6 @@ npm-debug.log
 *.pyc
 *.exe
 __pycache__
+*.player
+*.bak1
+*.shipworld
