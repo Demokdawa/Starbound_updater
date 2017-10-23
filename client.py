@@ -108,11 +108,11 @@ def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
         else:
             download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
 
-def backup_char(local_path, remote_bck__folder, sftp_serv):
+def backup_char(local_path, remote_bck_folder, sftp_serv):
     local_save = installPath + "\\storage\\player\\"
     print("Sauvegarde du personnage...", flush=True)
     for filename in os.listdir():
-        sftp_serv.upload(local_save + filename, remote_folder + filename)
+        sftp_serv.upload(local_save + filename, remote_bck_folder + filename)
     print("Terminé !", flush=True)
 
 if __name__ == '__main__':
