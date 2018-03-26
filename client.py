@@ -134,3 +134,10 @@ if __name__ == '__main__':
     else:
         print("Le script n'est pas place dans le dossier Starbound !", flush=True)
         sleep(3)
+
+class FileHash
+
+    def __init__(self, target_path, filename)
+        self.target_path = target_path
+        self.filename = filename
+    
