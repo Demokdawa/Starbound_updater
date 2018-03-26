@@ -10,13 +10,12 @@ import shutil
 import ftputil
 import zipfile
 
+zipFolder = "/starbound/zips/"
+backup_folder = "/starbound/backups/"
+sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
 installPath = os.getcwd()
 modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
-sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
-zipFolder = "/starbound/zips/"
-backup_folder = "/starbound/backups/"
-
 
 def get_serv_dict():
     print("Recuperation des informations serveur...", flush=True)
