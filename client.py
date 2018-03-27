@@ -1,5 +1,6 @@
 from __future__ import print_function
 from time import sleep
+from threading import Thread
 import checksumdir
 import hashlib
 import grpc
@@ -9,7 +10,9 @@ import os
 import shutil
 import ftputil
 import zipfile
-from threading import Thread
+import Queue
+
+
 
 zipFolder = "/starbound/zips/"
 backup_folder = "/starbound/backups/"
@@ -17,6 +20,8 @@ sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
 installPath = os.getcwd()
 modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
+thread_count = 10
+queue = Queue()
 
 
 
@@ -30,19 +35,39 @@ def get_serv_dict():
     return serv_dict
 
 
+class FileHash(Thread):
+
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        (filename, target_path) = self.queue.get()
+        openedFile = open(target_path + filename, 'rb')
+        readFile = openedFile.read()
+        md5Hash = hashlib.md5(readFile)
+        md5Hashed = md5Hash.hexdigest()
+        return md5Hashed
+
+
 def find_all_hash(target_path):
     hash_dict = {}
     print("Recuperation des informations locales...", flush=True)
     for filename in os.listdir(target_path):
         if os.path.isdir(target_path + filename):
-            hash_dict[filename] = \
-                get_folder_hash(target_path, filename)
+            "hash_dict[filename] = get_folder_hash(target_path, filename)"
+            queue.put((target_path, filename))
         else:
-            hash_dict[filename] = \
-                get_file_hash(target_path, filename)
+            "hash_dict[filename] = get_file_hash(target_path, filename)"
+            queue.put((target_path, filename))
     print("Termine !")
     return hash_dict
 
+def thread_creator(queue):
+    for i in range(thread_count):
+        fileHash = FileHash(queue)
+        fileHash.daemon = True
+        fileHash.start()
 
 def get_folder_hash(target_path, filename):
     hash = checksumdir.dirhash(target_path + filename)
@@ -128,17 +153,3 @@ if __name__ == '__main__':
     else:
         print("Le script n'est pas place dans le dossier Starbound !", flush=True)
         sleep(3)
-
-class FileHash(Thread):
-
-    def __init__(self, target_path, filename):
-        Thread.__init__(self)
-        self.target_path = target_path
-        self.filename = filename
-
-    def get_file_hash(self, target_path, filename):
-        openedFile = open(self.target_path + self.filename, 'rb')
-        readFile = openedFile.read()
-        md5Hash = hashlib.md5(readFile)
-        md5Hashed = md5Hash.hexdigest()
-        return md5Hashed
