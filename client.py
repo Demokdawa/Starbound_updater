@@ -42,12 +42,13 @@ class FileHash(Thread):
         self.queue = queue
 
     def run(self):
-        (filename, target_path) = self.queue.get()
-        openedFile = open(target_path + filename, 'rb')
-        readFile = openedFile.read()
-        md5Hash = hashlib.md5(readFile)
-        md5Hashed = md5Hash.hexdigest()
-        return md5Hashed
+        while True:
+            (filename, target_path) = self.queue.get()
+            openedFile = open(target_path + filename, 'rb')
+            readFile = openedFile.read()
+            md5Hash = hashlib.md5(readFile)
+            md5Hashed = md5Hash.hexdigest()
+            return md5Hashed
 
 
 def find_all_hash(target_path):
@@ -56,14 +57,15 @@ def find_all_hash(target_path):
     for filename in os.listdir(target_path):
         if os.path.isdir(target_path + filename):
             "hash_dict[filename] = get_folder_hash(target_path, filename)"
-            queue.put((target_path, filename))
+            "queue.put((target_path, filename))"
         else:
             "hash_dict[filename] = get_file_hash(target_path, filename)"
             queue.put((target_path, filename))
-    print("Termine !")
+    print("Queue up !")
+
     return hash_dict
 
-def thread_creator(queue):
+def thread_creator(queue, thread_count):
     for i in range(thread_count):
         fileHash = FileHash(queue)
         fileHash.daemon = True
