@@ -9,6 +9,7 @@ import os
 import shutil
 import ftputil
 import zipfile
+from threading import Thread
 
 zipFolder = "/starbound/zips/"
 backup_folder = "/starbound/backups/"
@@ -16,6 +17,8 @@ sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
 installPath = os.getcwd()
 modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
+
+
 
 def get_serv_dict():
     print("Recuperation des informations serveur...", flush=True)
@@ -44,15 +47,6 @@ def find_all_hash(target_path):
 def get_folder_hash(target_path, filename):
     hash = checksumdir.dirhash(target_path + filename)
     return hash
-
-
-def get_file_hash(target_path, filename):
-    openedFile = open(target_path + filename, 'rb')
-    readFile = openedFile.read()
-    md5Hash = hashlib.md5(readFile)
-    md5Hashed = md5Hash.hexdigest()
-    return md5Hashed
-
 
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):
     for filename_delete, client_hash in client_dict_input.items():
@@ -135,9 +129,16 @@ if __name__ == '__main__':
         print("Le script n'est pas place dans le dossier Starbound !", flush=True)
         sleep(3)
 
-class FileHash
+class FileHash(Thread):
 
-    def __init__(self, target_path, filename)
+    def __init__(self, target_path, filename):
+        Thread.__init__(self)
         self.target_path = target_path
         self.filename = filename
-    
+
+    def get_file_hash(self, target_path, filename):
+        openedFile = open(self.target_path + self.filename, 'rb')
+        readFile = openedFile.read()
+        md5Hash = hashlib.md5(readFile)
+        md5Hashed = md5Hash.hexdigest()
+        return md5Hashed
