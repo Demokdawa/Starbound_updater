@@ -78,7 +78,7 @@ class HashCompute(Thread):
             if os.path.isdir(target_path + filename):
                 hash_dict[filename] = checksumdir.dirhash(target_path + filename)
             else:
-                openedFile = open(target_path + filename, 'rb')
+                openedFile = open(target_path + '/' filename, 'rb')
                 readFile = openedFile.read()
                 md5Hash = hashlib.md5(readFile)
                 hash_dict[filename] = md5Hash.hexdigest()
