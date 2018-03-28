@@ -26,7 +26,7 @@ queue = Queue()
 hash_dict = {}
 
 #Classe qui calcule les hash sur plusieurs threads a partir de la queue
-class FileHash(Thread):
+class HashCompute(Thread):
 
     def __init__(self, queue):
         Thread.__init__(self)
@@ -54,8 +54,8 @@ def get_serv_dict():
     print("Termine !")
     return serv_dict
 
-def find_all_hash(target_path):
-    "hash_dict = {}"
+#Creer le dictionnaire client
+def build_client_dict(target_path):
     print("Recuperation des informations locales...", flush=True)
     for filename in os.listdir(target_path):
         queue.put((target_path, filename))
@@ -65,11 +65,12 @@ def find_all_hash(target_path):
     print("Hash dict builded !")
     return hash_dict
 
+#Creer les threads de calcul hash
 def thread_creator(queue, thread_count):
     for i in range(thread_count):
-        fileHash = FileHash(queue)
-        fileHash.daemon = True
-        fileHash.start()
+        HashCompute = HashCompute(queue)
+        HashCompute.daemon = True
+        HashCompute.start()
 
 #Supprime les mods en trop
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):
@@ -144,7 +145,7 @@ if __name__ == '__main__':
         sleep(1)
         backup_char(installPath, backup_folder, sftp_serv)
         sleep(1)
-        client_dict = find_all_hash(modPath)
+        client_dict = build_client_dict(modPath)
         serv_dict = get_serv_dict()
         remove_extra_files(modPath, client_dict, serv_dict)
         download_extra_files(modPath, remotePath, zipFolder, client_dict, serv_dict, sftp_serv)
