@@ -19,7 +19,7 @@ sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
 installPath = os.getcwd()
 modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
-thread_count = 10
+thread_count = 100
 
 #Déclaration des objets
 queue = Queue()

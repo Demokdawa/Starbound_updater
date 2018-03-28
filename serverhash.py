@@ -39,14 +39,14 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         print (MyDict)
         return MyDict
 
-    def build_server_dict(target_path):
-        for filename in os.listdir(target_path):
-            queue.put((target_path, filename))
+    def build_server_dict(self):
+        for filename in os.listdir(self.modPath):
+            queue.put((self.modPath, filename))
         thread_creator(queue, thread_count)
         queue.join()
         return MyDict
 
-    def thread_creator(queue, thread_count):
+    def thread_creator(self, queue, thread_count):
         for i in range(thread_count):
             hashcompute = HashCompute(queue)
             hashcompute.daemon = True
