@@ -60,7 +60,7 @@ def build_client_dict(target_path):
     for filename in os.listdir(target_path):
         queue.put((target_path, filename))
     print("Queue up !")
-    print(queue.qsize)
+    print(queue.qsize())
     thread_creator(queue, thread_count)
     queue.join()
     print("Hash dict builded !")

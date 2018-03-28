@@ -73,8 +73,8 @@ class HashCompute(Thread):
 
     def run(self):
         while True:
-            target_path, filename = self.queue.get()
-            if os.path.isdir(modPath + filename):
+            modPath, filename = self.queue.get()
+            if os.path.isdir(modPath + '/' + filename):
                 MyDict[filename] = checksumdir.dirhash(modPath + '/' + filename)
             else:
                 openedFile = open(modPath + '/' + filename, 'rb')
