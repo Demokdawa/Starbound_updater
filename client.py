@@ -1,5 +1,6 @@
 from __future__ import print_function
 from time import sleep
+from subprocess import STDOUT
 from threading import Thread
 from queue import Queue
 import checksumdir
@@ -11,6 +12,7 @@ import os
 import shutil
 import ftputil
 import zipfile
+import sys
 
 #Variables statiques de paramètrage
 zipFolder = "/starbound/zips/"
@@ -48,7 +50,8 @@ class HashCompute(Thread):
                 hash_dict[filename] = md5Hash.hexdigest()
             hashdone += 1
             self.queue.task_done()
-
+            
+#Classe compteur de progression hashing
 class QueueCounter(Thread):
 
     def __init__(self, queue, hashtotal):
@@ -59,7 +62,10 @@ class QueueCounter(Thread):
     def run(self):
         global hashdone
         while hashdone < self.hashtotal:
-            print(str(hashdone) + '/' + str(self.hashtotal), end='\r', flush=True)
+            "print(str(hashdone) + '/' + str(self.hashtotal), end='\r', flush=True)"
+            self.progressBar(hashdone, self.hashtotal)
+
+
 
 #Récupère le dictionnaire serveur
 def get_serv_dict():
@@ -158,6 +164,14 @@ def backup_char(local_path, remote_bck_folder, sftp_serv):
     for filename in os.listdir(local_save):
         sftp_serv.upload(local_save + filename, remote_bck_folder + filename)
     print("Terminé !", flush=True)
+
+#FONCTION INUTILISEE - Barre de chargement progressive
+def progressBar(self, value, endvalue, bar_length=20):
+        percent = float(value) / endvalue
+        arrow = '-' * int(round(percent * bar_length)-1) + '>'
+        spaces = ' ' * (bar_length - len(arrow))
+        sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
+        sys.stdout.flush()
 
 
 if __name__ == '__main__':
