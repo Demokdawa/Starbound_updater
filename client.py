@@ -68,9 +68,9 @@ def build_client_dict(target_path):
 #Creer les threads de calcul hash
 def thread_creator(queue, thread_count):
     for i in range(thread_count):
-        HashCompute = HashCompute(queue)
-        HashCompute.daemon = True
-        HashCompute.start()
+        hashcompute = HashCompute(queue)
+        hashcompute.daemon = True
+        hashcompute.start()
 
 #Supprime les mods en trop
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):

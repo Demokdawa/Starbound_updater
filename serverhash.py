@@ -14,13 +14,17 @@ import starbound_pb2
 import starbound_pb2_grpc
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
+thread_count = 10
+
+queue = Queue()
+MyDict = {}
 
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     modPath = '/home/steam/starbound/mods'
 
     def send_dict(self, request, context):
-        random_dict = self.find_all_hash()
+        random_dict = self.build_server_dict()
         return starbound_pb2.MyDict(dictionary=random_dict)
 
     def find_all_hash(self):
@@ -35,6 +39,19 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         print (MyDict)
         return MyDict
 
+    def build_server_dict(target_path):
+        for filename in os.listdir(target_path):
+            queue.put((target_path, filename))
+        thread_creator(queue, thread_count)
+        queue.join()
+        return MyDict
+
+    def thread_creator(queue, thread_count):
+        for i in range(thread_count):
+            hashcompute = HashCompute(queue)
+            hashcompute.daemon = True
+            hashcompute.start()
+
     def get_folder_hash(self, filename):
         hash = checksumdir.dirhash(self.modPath + '/'
                 + filename)
@@ -46,6 +63,24 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         md5Hash = hashlib.md5(readFile)
         md5Hashed = md5Hash.hexdigest()
         return md5Hashed
+
+class HashCompute(Thread):
+
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        while True:
+            target_path, filename = self.queue.get()
+            if os.path.isdir(target_path + filename):
+                hash_dict[filename] = checksumdir.dirhash(target_path + filename)
+            else:
+                openedFile = open(target_path + filename, 'rb')
+                readFile = openedFile.read()
+                md5Hash = hashlib.md5(readFile)
+                hash_dict[filename] = md5Hash.hexdigest()
+            self.queue.task_done()
 
 def serve():
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
