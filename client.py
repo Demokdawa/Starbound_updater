@@ -21,6 +21,9 @@ modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
 thread_count = 10
 
+#Variables globales
+hashdone = 0
+
 #Déclaration des objets
 queue = Queue()
 hash_dict = {}
@@ -33,6 +36,7 @@ class HashCompute(Thread):
         self.queue = queue
 
     def run(self):
+        global hashdone
         while True:
             target_path, filename = self.queue.get()
             if os.path.isdir(target_path + filename):
@@ -42,7 +46,20 @@ class HashCompute(Thread):
                 readFile = openedFile.read()
                 md5Hash = hashlib.md5(readFile)
                 hash_dict[filename] = md5Hash.hexdigest()
+            hashdone += 1
             self.queue.task_done()
+
+class QueueCounter(Thread):
+
+    def __init__(self, queue, hashtotal):
+        Thread.__init__(self)
+        self.queue = queue
+        self.hashtotal = hashtotal
+
+    def run(self):
+        global hashdone
+        while hashdone < self.hashtotal:
+            print(str(hashdone) + '/' + str(self.hashtotal), end='\r', flush=True)
 
 #Récupère le dictionnaire serveur
 def get_serv_dict():
@@ -60,18 +77,21 @@ def build_client_dict(target_path):
     for filename in os.listdir(target_path):
         queue.put((target_path, filename))
     print("Queue up !")
-    print(queue.qsize())
-    thread_creator(queue, thread_count)
+    hashtotal = queue.qsize()
+    thread_creator(queue, thread_count, hashtotal)
     queue.join()
     print("Hash dict builded !")
     return hash_dict
 
 #Creer les threads de calcul hash
-def thread_creator(queue, thread_count):
+def thread_creator(queue, thread_count, hashtotal):
     for i in range(thread_count):
         hashcompute = HashCompute(queue)
         hashcompute.daemon = True
         hashcompute.start()
+    queuecounter = QueueCounter(queue, hashtotal)
+    queuecounter.daemon = True
+    queuecounter.start()
 
 #Supprime les mods en trop
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):
