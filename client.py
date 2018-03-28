@@ -34,11 +34,6 @@ hashdone = 0
 queue = Queue()
 hash_dict = {}
 
-class MyApp(App):
-
-    def build(self):
-        return Label(text='Hello world')
-
 #Classe qui calcule les hash sur plusieurs threads a partir de la queue (queue)
 class HashCompute(Thread):
 
