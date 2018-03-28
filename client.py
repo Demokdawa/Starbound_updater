@@ -19,7 +19,7 @@ sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
 installPath = os.getcwd()
 modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
-thread_count = 100
+thread_count = 10
 
 #Déclaration des objets
 queue = Queue()
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
         print("Dossier officiel starbound detecte !", flush=True)
         sleep(1)
-        backup_char(installPath, backup_folder, sftp_serv)
+        "backup_char(installPath, backup_folder, sftp_serv)"
         sleep(1)
         client_dict = build_client_dict(modPath)
         serv_dict = get_serv_dict()
