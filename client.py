@@ -30,8 +30,9 @@ hashdone = 0
 queue = Queue()
 hash_dict = {}
 
-#Classe qui calcule les hash sur plusieurs threads a partir de la queue
+#Classe qui calcule les hash sur plusieurs threads a partir de la queue (queue)
 class HashCompute(Thread):
+
 
     def __init__(self, queue):
         Thread.__init__(self)
@@ -50,9 +51,10 @@ class HashCompute(Thread):
                 hash_dict[filename] = md5Hash.hexdigest()
             hashdone += 1
             self.queue.task_done()
-            
-#Classe compteur de progression hashing
+
+#Classe compteur de progression hashing (queue, hashtotal)
 class QueueCounter(Thread):
+
 
     def __init__(self, queue, hashtotal):
         Thread.__init__(self)
@@ -62,10 +64,8 @@ class QueueCounter(Thread):
     def run(self):
         global hashdone
         while hashdone < self.hashtotal:
-            "print(str(hashdone) + '/' + str(self.hashtotal), end='\r', flush=True)"
-            self.progressBar(hashdone, self.hashtotal)
-
-
+            print(str(hashdone) + '/' + str(self.hashtotal), end='\r', flush=True)
+            "self.progressBar(hashdone, self.hashtotal)"
 
 #Récupère le dictionnaire serveur
 def get_serv_dict():
@@ -99,18 +99,25 @@ def thread_creator(queue, thread_count, hashtotal):
     queuecounter.daemon = True
     queuecounter.start()
 
-#Supprime les mods en trop
-def remove_extra_files(target_path, client_dict_input, serv_dict_input):
-    for filename_delete, client_hash in client_dict_input.items():
-        server_hash = serv_dict_input.get(filename_delete)
-        if server_hash != client_hash:
-            print("Suppression de " + filename_delete, flush=True)
-            if os.path.isfile(target_path + filename_delete):
-                os.remove(target_path + filename_delete)
-            elif os.path.isdir(target_path + filename_delete + "\\"):
-                shutil.rmtree(target_path + filename_delete + "\\", ignore_errors=True)
-            else:
-                print("Erreur lors de la suppression de" + filename_delete, flush=True)
+#Classe qui supprime les mods en trop
+class RemoveUnusedMods:
+
+    def __init__(self, modPath, client_dict, serv_dict):
+        self.target_path = modPath
+        self.client_dict_input = client_dict
+        self.serv_dict_input = serv_dict
+
+    def remove_extra_files(self):
+        for filename_delete, client_hash in self.client_dict_input.items():
+            server_hash = self.serv_dict_input.get(filename_delete)
+            if server_hash != client_hash:
+                print("Suppression de " + filename_delete, flush=True)
+                if os.path.isfile(self.target_path + filename_delete):
+                    os.remove(self.target_path + filename_delete)
+                elif os.path.isdir(self.target_path + filename_delete + "\\"):
+                    shutil.rmtree(self.target_path + filename_delete + "\\", ignore_errors=True)
+                else:
+                    print("Erreur lors de la suppression de" + filename_delete, flush=True)
 
 #Telecharge les mods manquants
 def download_extra_files(target_path, remote_path, zip_folder, client_dict_input, serv_dict_input, sftp_serv):
@@ -182,7 +189,9 @@ if __name__ == '__main__':
         sleep(1)
         client_dict = build_client_dict(modPath)
         serv_dict = get_serv_dict()
-        remove_extra_files(modPath, client_dict, serv_dict)
+        remove = RemoveUnusedMods(modPath, client_dict, serv_dict)
+        remove.remove_extra_files
+        'remove_extra_files(modPath, client_dict, serv_dict)'
         download_extra_files(modPath, remotePath, zipFolder, client_dict, serv_dict, sftp_serv)
         print("Mise a jour terminee !", flush=True)
     else:
