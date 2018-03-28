@@ -13,6 +13,10 @@ import shutil
 import ftputil
 import zipfile
 import sys
+import kivy
+kivy.require('1.10.0')
+from kivy.app import App
+from kivy.uix.label import Label
 
 #Variables statiques de paramètrage
 zipFolder = "/starbound/zips/"
@@ -29,6 +33,11 @@ hashdone = 0
 #Déclaration des objets
 queue = Queue()
 hash_dict = {}
+
+class MyApp(App):
+
+    def build(self):
+        return Label(text='Hello world')
 
 #Classe qui calcule les hash sur plusieurs threads a partir de la queue (queue)
 class HashCompute(Thread):
