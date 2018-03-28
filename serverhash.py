@@ -3,6 +3,8 @@
 from pathlib import Path
 from os import path
 from concurrent import futures
+from threading import Thread
+from queue import Queue
 import time
 import math
 import checksumdir
