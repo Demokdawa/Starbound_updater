@@ -44,7 +44,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
     def build_server_dict(self):
         for filename in os.listdir(self.modPath):
             queue.put((self.modPath, filename))
-        thread_creator(queue, thread_count)
+        self.thread_creator(queue, thread_count)
         queue.join()
         return MyDict
 
