@@ -17,13 +17,12 @@ import starbound_pb2_grpc
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 thread_count = 10
+modPath = '/home/steam/starbound/mods'
 
 queue = Queue()
 MyDict = {}
 
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
-
-    modPath = '/home/steam/starbound/mods'
 
     def send_dict(self, request, context):
         random_dict = self.build_server_dict()
@@ -42,8 +41,8 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         return MyDict
 
     def build_server_dict(self):
-        for filename in os.listdir(self.modPath):
-            queue.put((self.modPath, filename))
+        for filename in os.listdir(modPath):
+            queue.put((modPath, filename))
         self.thread_creator(queue, thread_count)
         queue.join()
         return MyDict
@@ -75,10 +74,10 @@ class HashCompute(Thread):
     def run(self):
         while True:
             target_path, filename = self.queue.get()
-            if os.path.isdir(target_path + filename):
-                MyDict[filename] = checksumdir.dirhash(target_path + filename)
+            if os.path.isdir(modPath + filename):
+                MyDict[filename] = checksumdir.dirhash(modPath + '/' + filename)
             else:
-                openedFile = open(target_path + '/' + filename, 'rb')
+                openedFile = open(modPath + '/' + filename, 'rb')
                 readFile = openedFile.read()
                 md5Hash = hashlib.md5(readFile)
                 MyDict[filename] = md5Hash.hexdigest()

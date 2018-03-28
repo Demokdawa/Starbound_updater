@@ -54,12 +54,13 @@ def get_serv_dict():
     print("Termine !")
     return serv_dict
 
-#Creer le dictionnaire client
+#Creer le dictionnaire client et la queue
 def build_client_dict(target_path):
     print("Recuperation des informations locales...", flush=True)
     for filename in os.listdir(target_path):
         queue.put((target_path, filename))
     print("Queue up !")
+    print(queue.qsize)
     thread_creator(queue, thread_count)
     queue.join()
     print("Hash dict builded !")
