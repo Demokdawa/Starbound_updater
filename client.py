@@ -1,6 +1,7 @@
 from __future__ import print_function
 from time import sleep
 from threading import Thread
+from queue import Queue
 import checksumdir
 import hashlib
 import grpc
@@ -10,10 +11,8 @@ import os
 import shutil
 import ftputil
 import zipfile
-import Queue
 
-
-
+#Variables statiques de paramètrage
 zipFolder = "/starbound/zips/"
 backup_folder = "/starbound/backups/"
 sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
@@ -21,10 +20,31 @@ installPath = os.getcwd()
 modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
 thread_count = 10
+
+#Déclaration des objets
 queue = Queue()
+hash_dict = {}
 
+#Classe qui calcule les hash sur plusieurs threads a partir de la queue
+class FileHash(Thread):
 
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
 
+    def run(self):
+        while True:
+            target_path, filename = self.queue.get()
+            if os.path.isdir(target_path + filename):
+                hash_dict[filename] = checksumdir.dirhash(target_path + filename)
+            else:
+                openedFile = open(target_path + filename, 'rb')
+                readFile = openedFile.read()
+                md5Hash = hashlib.md5(readFile)
+                hash_dict[filename] = md5Hash.hexdigest()
+            self.queue.task_done()
+
+#Récupère le dictionnaire serveur
 def get_serv_dict():
     print("Recuperation des informations serveur...", flush=True)
     channel = grpc.insecure_channel('163.172.30.174:50051')
@@ -34,35 +54,15 @@ def get_serv_dict():
     print("Termine !")
     return serv_dict
 
-
-class FileHash(Thread):
-
-    def __init__(self, queue):
-        Thread.__init__(self)
-        self.queue = queue
-
-    def run(self):
-        while True:
-            (filename, target_path) = self.queue.get()
-            openedFile = open(target_path + filename, 'rb')
-            readFile = openedFile.read()
-            md5Hash = hashlib.md5(readFile)
-            md5Hashed = md5Hash.hexdigest()
-            return md5Hashed
-
-
 def find_all_hash(target_path):
-    hash_dict = {}
+    "hash_dict = {}"
     print("Recuperation des informations locales...", flush=True)
     for filename in os.listdir(target_path):
-        if os.path.isdir(target_path + filename):
-            "hash_dict[filename] = get_folder_hash(target_path, filename)"
-            "queue.put((target_path, filename))"
-        else:
-            "hash_dict[filename] = get_file_hash(target_path, filename)"
-            queue.put((target_path, filename))
+        queue.put((target_path, filename))
     print("Queue up !")
-
+    thread_creator(queue, thread_count)
+    queue.join()
+    print("Hash dict builded !")
     return hash_dict
 
 def thread_creator(queue, thread_count):
@@ -71,10 +71,7 @@ def thread_creator(queue, thread_count):
         fileHash.daemon = True
         fileHash.start()
 
-def get_folder_hash(target_path, filename):
-    hash = checksumdir.dirhash(target_path + filename)
-    return hash
-
+#Supprime les mods en trop
 def remove_extra_files(target_path, client_dict_input, serv_dict_input):
     for filename_delete, client_hash in client_dict_input.items():
         server_hash = serv_dict_input.get(filename_delete)
@@ -87,7 +84,7 @@ def remove_extra_files(target_path, client_dict_input, serv_dict_input):
             else:
                 print("Erreur lors de la suppression de" + filename_delete, flush=True)
 
-
+#Telecharge les mods manquants
 def download_extra_files(target_path, remote_path, zip_folder, client_dict_input, serv_dict_input, sftp_serv):
     for filename_download, server_hash in serv_dict_input.items():
         client_hash = client_dict_input.get(filename_download)
@@ -99,13 +96,13 @@ def download_extra_files(target_path, remote_path, zip_folder, client_dict_input
                 print("Telechargement de " + filename_download, flush=True)
                 download_zip_and_extract(target_path, zip_folder, filename_download + ".zip", sftp_serv)
 
-
+#Telecharge un fichier
 def download_file(target_path, remote_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = remote_path + name_to_dl
     sftp_serv.download(remote_path_from_dl, local_path_to_dl)
 
-
+#Telecharge un zip temporaire et l'extrait
 def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = zip_path + name_to_dl
@@ -116,7 +113,7 @@ def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv):
         zip_ref.extractall(target_path)
     os.remove(local_path_to_dl)
 
-
+#FONCTION INUTILISEE - Telecharge un dossier depuis le serveur
 def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = remote_path + name_to_dl
@@ -132,7 +129,7 @@ def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
         else:
             download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
 
-
+#Sauvegarde les données de personnage locales sur le serveur
 def backup_char(local_path, remote_bck_folder, sftp_serv):
     local_save = local_path + "\\storage\\player\\"
     print("Sauvegarde du personnage...", flush=True)
@@ -144,9 +141,9 @@ def backup_char(local_path, remote_bck_folder, sftp_serv):
 if __name__ == '__main__':
     if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
         print("Dossier officiel starbound detecte !", flush=True)
-        sleep(3)
+        sleep(1)
         backup_char(installPath, backup_folder, sftp_serv)
-        sleep(2)
+        sleep(1)
         client_dict = find_all_hash(modPath)
         serv_dict = get_serv_dict()
         remove_extra_files(modPath, client_dict, serv_dict)
