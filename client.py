@@ -13,10 +13,6 @@ import shutil
 import ftputil
 import zipfile
 import sys
-import kivy
-kivy.require('1.10.0')
-from kivy.app import App
-from kivy.uix.label import Label
 
 #Variables statiques de paramètrage
 zipFolder = "/starbound/zips/"
