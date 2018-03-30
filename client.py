@@ -69,24 +69,23 @@ class QueueCounter(Thread):
 
 #Récupère le dictionnaire serveur
 def get_serv_dict():
-    print("Recuperation des informations serveur...", flush=True)
+    print("Getting update data from server...", flush=True)
     channel = grpc.insecure_channel('163.172.30.174:50051')
     stub = starbound_pb2_grpc.DictSenderStub(channel)
     response = stub.send_dict(starbound_pb2.Empty())
     serv_dict = dict(response.dictionary)
-    print("Termine !")
+    print("Done !")
     return serv_dict
 
 #Creer le dictionnaire client et la queue
 def build_client_dict(target_path):
-    print("Recuperation des informations locales...", flush=True)
+    print("Getting local mods data...", flush=True)
     for filename in os.listdir(target_path):
         queue.put((target_path, filename))
-    print("Queue up !")
     hashtotal = queue.qsize()
     thread_creator(queue, thread_count, hashtotal)
     queue.join()
-    print("Hash dict builded !")
+    print("Done !")
     return hash_dict
 
 #Creer les threads de calcul hash
@@ -125,10 +124,10 @@ def download_extra_files(target_path, remote_path, zip_folder, client_dict_input
         client_hash = client_dict_input.get(filename_download)
         if client_hash != server_hash:
             if os.path.splitext(target_path + filename_download)[1] == ".pak":
-                print("Telechargement de " + filename_download, flush=True)
+                print("Download of " + filename_download, flush=True)
                 download_file(target_path, remote_path, filename_download, sftp_serv)
             else:
-                print("Telechargement de " + filename_download, flush=True)
+                print("Download of " + filename_download, flush=True)
                 download_zip_and_extract(target_path, zip_folder, filename_download + ".zip", sftp_serv)
 
 #Telecharge un fichier
@@ -167,10 +166,10 @@ def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
 #Sauvegarde les données de personnage locales sur le serveur
 def backup_char(local_path, remote_bck_folder, sftp_serv):
     local_save = local_path + "\\storage\\player\\"
-    print("Sauvegarde du personnage...", flush=True)
+    print("Backuping local characters...", flush=True)
     for filename in os.listdir(local_save):
         sftp_serv.upload(local_save + filename, remote_bck_folder + filename)
-    print("Terminé !", flush=True)
+    print("Done !", flush=True)
 
 #FONCTION INUTILISEE - Barre de chargement progressive
 def progressBar(self, value, endvalue, bar_length=20):
@@ -183,17 +182,15 @@ def progressBar(self, value, endvalue, bar_length=20):
 
 if __name__ == '__main__':
     if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
-        print("Dossier officiel starbound detecte !", flush=True)
-        sleep(1)
-        "backup_char(installPath, backup_folder, sftp_serv)"
-        sleep(1)
+        print("Starbound installation detected !", flush=True)
+        backup_char(installPath, backup_folder, sftp_serv)
         client_dict = build_client_dict(modPath)
         serv_dict = get_serv_dict()
         remove = RemoveUnusedMods(modPath, client_dict, serv_dict)
         remove.remove_extra_files
         'remove_extra_files(modPath, client_dict, serv_dict)'
         download_extra_files(modPath, remotePath, zipFolder, client_dict, serv_dict, sftp_serv)
-        print("Mise a jour terminee !", flush=True)
+        print("Update done !", flush=True)
     else:
-        print("Le script n'est pas place dans le dossier Starbound !", flush=True)
+        print("Starbound installation folder not found", flush=True)
         sleep(3)
