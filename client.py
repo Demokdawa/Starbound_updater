@@ -1,6 +1,5 @@
 from __future__ import print_function
 from time import sleep
-from subprocess import STDOUT
 from threading import Thread
 from queue import Queue
 import checksumdir
@@ -14,7 +13,7 @@ import ftputil
 import zipfile
 import sys
 
-#Variables statiques de paramètrage
+# Variables statiques de paramètrage
 zipFolder = "/starbound/zips/"
 backup_folder = "/starbound/backups/"
 sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
@@ -23,17 +22,16 @@ modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
 thread_count = 10
 
-#Variables globales
+# Variables globales
 hashdone = 0
 
-#Déclaration des objets
+# Déclaration des objets
 queue = Queue()
 hash_dict = {}
 
-#Classe qui calcule les hash sur plusieurs threads a partir de la queue (queue)
+
+# Classe qui calcule les hash sur plusieurs threads a partir de la queue (queue)
 class HashCompute(Thread):
-
-
     def __init__(self, queue):
         Thread.__init__(self)
         self.queue = queue
@@ -45,17 +43,16 @@ class HashCompute(Thread):
             if os.path.isdir(target_path + filename):
                 hash_dict[filename] = checksumdir.dirhash(target_path + filename)
             else:
-                openedFile = open(target_path + filename, 'rb')
-                readFile = openedFile.read()
-                md5Hash = hashlib.md5(readFile)
-                hash_dict[filename] = md5Hash.hexdigest()
+                opened_file = open(target_path + filename, 'rb')
+                read_file = opened_file.read()
+                md5_hash = hashlib.md5(read_file)
+                hash_dict[filename] = md5_hash.hexdigest()
             hashdone += 1
             self.queue.task_done()
 
-#Classe compteur de progression hashing (queue, hashtotal)
+
+# Classe compteur de progression hashing (queue, hashtotal)
 class QueueCounter(Thread):
-
-
     def __init__(self, queue, hashtotal):
         Thread.__init__(self)
         self.queue = queue
@@ -67,7 +64,8 @@ class QueueCounter(Thread):
             print(str(hashdone) + '/' + str(self.hashtotal), end='\r', flush=True)
             "self.progressBar(hashdone, self.hashtotal)"
 
-#Récupère le dictionnaire serveur
+
+# Récupère le dictionnaire serveur
 def get_serv_dict():
     print("Getting update data from server...", flush=True)
     channel = grpc.insecure_channel('163.172.30.174:50051')
@@ -77,7 +75,8 @@ def get_serv_dict():
     print("Done !")
     return serv_dict
 
-#Creer le dictionnaire client et la queue
+
+# Creer le dictionnaire client et la queue
 def build_client_dict(target_path):
     print("Getting local mods data...", flush=True)
     for filename in os.listdir(target_path):
@@ -88,19 +87,20 @@ def build_client_dict(target_path):
     print("Done !")
     return hash_dict
 
-#Creer les threads de calcul hash
+
+# Creer les threads de calcul hash
 def thread_creator(queue, thread_count, hashtotal):
     for i in range(thread_count):
-        hashcompute = HashCompute(queue)
-        hashcompute.daemon = True
-        hashcompute.start()
-    queuecounter = QueueCounter(queue, hashtotal)
-    queuecounter.daemon = True
-    queuecounter.start()
+        hash_compute = HashCompute(queue)
+        hash_compute.daemon = True
+        hash_compute.start()
+    queue_counter = QueueCounter(queue, hashtotal)
+    queue_counter.daemon = True
+    queue_counter.start()
 
-#Classe qui supprime les mods en trop
+
+# Classe qui supprime les mods en trop
 class RemoveUnusedMods:
-
     def __init__(self, modPath, client_dict, serv_dict):
         self.target_path = modPath
         self.client_dict_input = client_dict
@@ -118,7 +118,8 @@ class RemoveUnusedMods:
                 else:
                     print("Erreur lors de la suppression de" + filename_delete, flush=True)
 
-#Telecharge les mods manquants
+
+# Telecharge les mods manquants
 def download_extra_files(target_path, remote_path, zip_folder, client_dict_input, serv_dict_input, sftp_serv):
     for filename_download, server_hash in serv_dict_input.items():
         client_hash = client_dict_input.get(filename_download)
@@ -130,13 +131,15 @@ def download_extra_files(target_path, remote_path, zip_folder, client_dict_input
                 print("Download of " + filename_download, flush=True)
                 download_zip_and_extract(target_path, zip_folder, filename_download + ".zip", sftp_serv)
 
-#Telecharge un fichier
+
+# Telecharge un fichier
 def download_file(target_path, remote_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = remote_path + name_to_dl
     sftp_serv.download(remote_path_from_dl, local_path_to_dl)
 
-#Telecharge un zip temporaire et l'extrait
+
+# Telecharge un zip temporaire et l'extrait
 def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = zip_path + name_to_dl
@@ -147,7 +150,8 @@ def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv):
         zip_ref.extractall(target_path)
     os.remove(local_path_to_dl)
 
-#FONCTION INUTILISEE - Telecharge un dossier depuis le serveur
+
+# FONCTION INUTILISEE - Telecharge un dossier depuis le serveur
 def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = remote_path + name_to_dl
@@ -156,14 +160,15 @@ def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
     if not os.path.exists(local_path_to_dl):
         os.makedirs(local_path_to_dl)
 
-    dirlist = sftp_serv.listdir(remote_path_from_dl)
-    for i in dirlist:
+    dir_list = sftp_serv.listdir(remote_path_from_dl)
+    for i in dir_list:
         if sftp_serv.path.isdir(remote_path_from_dl + '/' + i):
             download_folder(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
         else:
             download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
 
-#Sauvegarde les données de personnage locales sur le serveur
+
+# Sauvegarde les données de personnage locales sur le serveur
 def backup_char(local_path, remote_bck_folder, sftp_serv):
     local_save = local_path + "\\storage\\player\\"
     print("Backuping local characters...", flush=True)
@@ -171,13 +176,14 @@ def backup_char(local_path, remote_bck_folder, sftp_serv):
         sftp_serv.upload(local_save + filename, remote_bck_folder + filename)
     print("Done !", flush=True)
 
-#FONCTION INUTILISEE - Barre de chargement progressive
+
+# FONCTION INUTILISEE - Barre de chargement progressive
 def progressBar(self, value, endvalue, bar_length=20):
-        percent = float(value) / endvalue
-        arrow = '-' * int(round(percent * bar_length)-1) + '>'
-        spaces = ' ' * (bar_length - len(arrow))
-        sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
-        sys.stdout.flush()
+    percent = float(value) / endvalue
+    arrow = '-' * int(round(percent * bar_length) - 1) + '>'
+    spaces = ' ' * (bar_length - len(arrow))
+    sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
+    sys.stdout.flush()
 
 
 if __name__ == '__main__':
