@@ -178,7 +178,7 @@ def backup_char(local_path, remote_bck_folder, sftp_serv):
 
 
 # FONCTION INUTILISEE - Barre de chargement progressive
-def progressBar(self, value, endvalue, bar_length=20):
+def progress_bar(value, endvalue, bar_length=20):
     percent = float(value) / endvalue
     arrow = '-' * int(round(percent * bar_length) - 1) + '>'
     spaces = ' ' * (bar_length - len(arrow))
