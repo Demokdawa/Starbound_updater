@@ -15,7 +15,6 @@ import zipfile
 import sys
 
 # Variables statiques de paramètrage
-from typing import Any
 
 zipFolder = "/starbound/zips/"
 backup_folder = "/starbound/backups/"
@@ -83,10 +82,10 @@ def get_serv_dict():
 def build_client_dict(target_path):
     print("Getting local mods data...", flush=True)
     for filename in os.listdir(target_path):
-        queue.put((target_path, filename))
-    hashtotal = queue.qsize()
+        hash_queue.put((target_path, filename))
+    hashtotal = hash_queue.qsize()
     thread_creator(hash_queue, thread_count, hashtotal)
-    queue.join()
+    hash_queue.join()
     print("Done !")
     return hash_dict
 
