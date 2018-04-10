@@ -15,7 +15,6 @@ import zipfile
 import sys
 
 # Variables statiques de paramètrage
-
 zipFolder = "/starbound/zips/"
 backup_folder = "/starbound/backups/"
 sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
@@ -101,37 +100,31 @@ def thread_creator(queue, thread_count_value, hashtotal):
     queue_counter.start()
 
 
-# Classe qui supprime les mods en trop
-class RemoveUnusedMods:
-    def __init__(self, modPath, client_dict, serv_dict):
-        self.target_path = modPath
-        self.client_dict_input = client_dict
-        self.serv_dict_input = serv_dict
-
-    def remove_extra_files(self):
-        for filename_delete, client_hash in self.client_dict_input.items():
-            server_hash = self.serv_dict_input.get(filename_delete)
-            if server_hash != client_hash:
-                print("Suppression de " + filename_delete, flush=True)
-                if os.path.isfile(self.target_path + filename_delete):
-                    os.remove(self.target_path + filename_delete)
-                elif os.path.isdir(self.target_path + filename_delete + "\\"):
-                    shutil.rmtree(self.target_path + filename_delete + "\\", ignore_errors=True)
-                else:
-                    print("Erreur lors de la suppression de" + filename_delete, flush=True)
+# Supprime les mods en trop
+def remove_extra_files(target_path, client_dict_input, serv_dict_input):
+    for filename_delete, client_hash in client_dict_input.items():
+        server_hash = serv_dict_input.get(filename_delete)
+        if server_hash != client_hash:
+            print("Suppression de " + filename_delete, flush=True)
+            if os.path.isfile(target_path + filename_delete):
+                os.remove(target_path + filename_delete)
+            elif os.path.isdir(target_path + filename_delete + "\\"):
+                shutil.rmtree(target_path + filename_delete + "\\", ignore_errors=True)
+            else:
+                print("Erreur lors de la suppression de" + filename_delete, flush=True)
 
 
 # Telecharge les mods manquants
-def download_extra_files(target_path, remote_path, zip_folder, client_dict_input, serv_dict_input, sftp_serv):
+def download_extra_files(target_path, remote_path, zip_folder, client_dict_input, serv_dict_input, sftp_serv_address):
     for filename_download, server_hash in serv_dict_input.items():
         client_hash = client_dict_input.get(filename_download)
         if client_hash != server_hash:
             if os.path.splitext(target_path + filename_download)[1] == ".pak":
                 print("Download of " + filename_download, flush=True)
-                download_file(target_path, remote_path, filename_download, sftp_serv)
+                download_file(target_path, remote_path, filename_download, sftp_serv_address)
             else:
                 print("Download of " + filename_download, flush=True)
-                download_zip_and_extract(target_path, zip_folder, filename_download + ".zip", sftp_serv)
+                download_zip_and_extract(target_path, zip_folder, filename_download + ".zip", sftp_serv_address)
 
 
 # Telecharge un fichier
@@ -142,10 +135,10 @@ def download_file(target_path, remote_path, name_to_dl, sftp_serv_address):
 
 
 # Telecharge un zip temporaire et l'extrait
-def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv):
+def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv_address):
     local_path_to_dl = target_path + name_to_dl
     remote_path_from_dl = zip_path + name_to_dl
-    sftp_serv.download(remote_path_from_dl, local_path_to_dl)
+    sftp_serv_address.download(remote_path_from_dl, local_path_to_dl)
 
     with zipfile.ZipFile(local_path_to_dl, "r") as zip_ref:
         zip_ref.debug = 3
@@ -188,15 +181,35 @@ def progress_bar(value, end_value, bar_length=20):
     sys.stdout.flush()
 
 
+# CLASSE INUTILISEE - Classe qui supprime les mods en trop
+class RemoveUnusedMods:
+    def __init__(self, modPath, client_dict, serv_dict):
+        self.target_path = modPath
+        self.client_dict_input = client_dict
+        self.serv_dict_input = serv_dict
+
+    def remove_extra_files_lol(self):
+        for filename_delete, client_hash in self.client_dict_input.items():
+            server_hash = self.serv_dict_input.get(filename_delete)
+            if server_hash != client_hash:
+                print("Suppression de " + filename_delete, flush=True)
+                if os.path.isfile(self.target_path + filename_delete):
+                    os.remove(self.target_path + filename_delete)
+                elif os.path.isdir(self.target_path + filename_delete + "\\"):
+                    shutil.rmtree(self.target_path + filename_delete + "\\", ignore_errors=True)
+                else:
+                    print("Erreur lors de la suppression de" + filename_delete, flush=True)
+
+
 if __name__ == '__main__':
     if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
         backup_char(installPath, backup_folder, sftp_serv)
         client_dict = build_client_dict(modPath)
         serv_dict = get_serv_dict()
-        remove = RemoveUnusedMods(modPath, client_dict, serv_dict)
-        remove.remove_extra_files
-        'remove_extra_files(modPath, client_dict, serv_dict)'
+        'remove = RemoveUnusedMods(modPath, client_dict, serv_dict)'
+        'remove.remove_extra_files'
+        remove_extra_files(modPath, client_dict, serv_dict)
         download_extra_files(modPath, remotePath, zipFolder, client_dict, serv_dict, sftp_serv)
         print("Update done !", flush=True)
     else:
