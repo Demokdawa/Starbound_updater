@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import print_function
 from time import sleep
 from threading import Thread
@@ -26,7 +27,7 @@ thread_count = 10
 hashdone = 0
 
 # Déclaration des objets
-queue = Queue()
+hash_queue = Queue()
 hash_dict = {}
 
 
@@ -71,26 +72,26 @@ def get_serv_dict():
     channel = grpc.insecure_channel('163.172.30.174:50051')
     stub = starbound_pb2_grpc.DictSenderStub(channel)
     response = stub.send_dict(starbound_pb2.Empty())
-    serv_dict = dict(response.dictionary)
+    serv_dict_build = dict(response.dictionary)
     print("Done !")
-    return serv_dict
+    return serv_dict_build
 
 
 # Creer le dictionnaire client et la queue
 def build_client_dict(target_path):
     print("Getting local mods data...", flush=True)
     for filename in os.listdir(target_path):
-        queue.put((target_path, filename))
-    hashtotal = queue.qsize()
-    thread_creator(queue, thread_count, hashtotal)
-    queue.join()
+        hash_queue.put((target_path, filename))
+    hashtotal = hash_queue.qsize()
+    thread_creator(hash_queue, thread_count, hashtotal)
+    hash_queue.join()
     print("Done !")
     return hash_dict
 
 
 # Creer les threads de calcul hash
-def thread_creator(queue, thread_count, hashtotal):
-    for i in range(thread_count):
+def thread_creator(queue, thread_count_value, hashtotal):
+    for _ in range(thread_count_value):
         hash_compute = HashCompute(queue)
         hash_compute.daemon = True
         hash_compute.start()
@@ -99,14 +100,95 @@ def thread_creator(queue, thread_count, hashtotal):
     queue_counter.start()
 
 
-# Classe qui supprime les mods en trop
+# Supprime les mods en trop
+def remove_extra_files(target_path, client_dict_input, serv_dict_input):
+    for filename_delete, client_hash in client_dict_input.items():
+        server_hash = serv_dict_input.get(filename_delete)
+        if server_hash != client_hash:
+            print("Suppression de " + filename_delete, flush=True)
+            if os.path.isfile(target_path + filename_delete):
+                os.remove(target_path + filename_delete)
+            elif os.path.isdir(target_path + filename_delete + "\\"):
+                shutil.rmtree(target_path + filename_delete + "\\", ignore_errors=True)
+            else:
+                print("Erreur lors de la suppression de" + filename_delete, flush=True)
+
+
+# Telecharge les mods manquants
+def download_extra_files(target_path, remote_path, zip_folder, client_dict_input, serv_dict_input, sftp_serv_address):
+    for filename_download, server_hash in serv_dict_input.items():
+        client_hash = client_dict_input.get(filename_download)
+        if client_hash != server_hash:
+            if os.path.splitext(target_path + filename_download)[1] == ".pak":
+                print("Download of " + filename_download, flush=True)
+                download_file(target_path, remote_path, filename_download, sftp_serv_address)
+            else:
+                print("Download of " + filename_download, flush=True)
+                download_zip_and_extract(target_path, zip_folder, filename_download + ".zip", sftp_serv_address)
+
+
+# Telecharge un fichier
+def download_file(target_path, remote_path, name_to_dl, sftp_serv_address):
+    local_path_to_dl = target_path + name_to_dl
+    remote_path_from_dl = remote_path + name_to_dl
+    sftp_serv_address.download(remote_path_from_dl, local_path_to_dl)
+
+
+# Telecharge un zip temporaire et l'extrait
+def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv_address):
+    local_path_to_dl = target_path + name_to_dl
+    remote_path_from_dl = zip_path + name_to_dl
+    sftp_serv_address.download(remote_path_from_dl, local_path_to_dl)
+
+    with zipfile.ZipFile(local_path_to_dl, "r") as zip_ref:
+        zip_ref.debug = 3
+        zip_ref.extractall(target_path)
+    os.remove(local_path_to_dl)
+
+
+# FONCTION INUTILISEE - Telecharge un dossier depuis le serveur
+def download_folder(target_path, remote_path, name_to_dl, sftp_serv_address):
+    local_path_to_dl = target_path + name_to_dl
+    remote_path_from_dl = remote_path + name_to_dl
+    if not sftp_serv_address.path.exists(remote_path_from_dl):
+        return
+    if not os.path.exists(local_path_to_dl):
+        os.makedirs(local_path_to_dl)
+
+    dir_list = sftp_serv_address.listdir(remote_path_from_dl)
+    for i in dir_list:
+        if sftp_serv_address.path.isdir(remote_path_from_dl + '/' + i):
+            download_folder(target_path, remote_path, name_to_dl + '/' + i, sftp_serv_address)
+        else:
+            download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv_address)
+
+
+# Sauvegarde les données de personnage locales sur le serveur
+def backup_char(local_path, remote_bck_folder, sftp_serv_address):
+    local_save = local_path + "\\storage\\player\\"
+    print("Backuping local characters...", flush=True)
+    for filename in os.listdir(local_save):
+        sftp_serv_address.upload(local_save + filename, remote_bck_folder + filename)
+    print("Done !", flush=True)
+
+
+# FONCTION INUTILISEE - Barre de chargement progressive
+def progress_bar(value, end_value, bar_length=20):
+    percent = float(value) / end_value
+    arrow = '-' * int(round(percent * bar_length) - 1) + '>'
+    spaces = ' ' * (bar_length - len(arrow))
+    sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
+    sys.stdout.flush()
+
+
+# CLASSE INUTILISEE - Classe qui supprime les mods en trop
 class RemoveUnusedMods:
     def __init__(self, modPath, client_dict, serv_dict):
         self.target_path = modPath
         self.client_dict_input = client_dict
         self.serv_dict_input = serv_dict
 
-    def remove_extra_files(self):
+    def remove_extra_files_lol(self):
         for filename_delete, client_hash in self.client_dict_input.items():
             server_hash = self.serv_dict_input.get(filename_delete)
             if server_hash != client_hash:
@@ -119,82 +201,15 @@ class RemoveUnusedMods:
                     print("Erreur lors de la suppression de" + filename_delete, flush=True)
 
 
-# Telecharge les mods manquants
-def download_extra_files(target_path, remote_path, zip_folder, client_dict_input, serv_dict_input, sftp_serv):
-    for filename_download, server_hash in serv_dict_input.items():
-        client_hash = client_dict_input.get(filename_download)
-        if client_hash != server_hash:
-            if os.path.splitext(target_path + filename_download)[1] == ".pak":
-                print("Download of " + filename_download, flush=True)
-                download_file(target_path, remote_path, filename_download, sftp_serv)
-            else:
-                print("Download of " + filename_download, flush=True)
-                download_zip_and_extract(target_path, zip_folder, filename_download + ".zip", sftp_serv)
-
-
-# Telecharge un fichier
-def download_file(target_path, remote_path, name_to_dl, sftp_serv):
-    local_path_to_dl = target_path + name_to_dl
-    remote_path_from_dl = remote_path + name_to_dl
-    sftp_serv.download(remote_path_from_dl, local_path_to_dl)
-
-
-# Telecharge un zip temporaire et l'extrait
-def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv):
-    local_path_to_dl = target_path + name_to_dl
-    remote_path_from_dl = zip_path + name_to_dl
-    sftp_serv.download(remote_path_from_dl, local_path_to_dl)
-
-    with zipfile.ZipFile(local_path_to_dl, "r") as zip_ref:
-        zip_ref.debug = 3
-        zip_ref.extractall(target_path)
-    os.remove(local_path_to_dl)
-
-
-# FONCTION INUTILISEE - Telecharge un dossier depuis le serveur
-def download_folder(target_path, remote_path, name_to_dl, sftp_serv):
-    local_path_to_dl = target_path + name_to_dl
-    remote_path_from_dl = remote_path + name_to_dl
-    if not sftp_serv.path.exists(remote_path_from_dl):
-        return
-    if not os.path.exists(local_path_to_dl):
-        os.makedirs(local_path_to_dl)
-
-    dir_list = sftp_serv.listdir(remote_path_from_dl)
-    for i in dir_list:
-        if sftp_serv.path.isdir(remote_path_from_dl + '/' + i):
-            download_folder(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
-        else:
-            download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv)
-
-
-# Sauvegarde les données de personnage locales sur le serveur
-def backup_char(local_path, remote_bck_folder, sftp_serv):
-    local_save = local_path + "\\storage\\player\\"
-    print("Backuping local characters...", flush=True)
-    for filename in os.listdir(local_save):
-        sftp_serv.upload(local_save + filename, remote_bck_folder + filename)
-    print("Done !", flush=True)
-
-
-# FONCTION INUTILISEE - Barre de chargement progressive
-def progress_bar(value, endvalue, bar_length=20):
-    percent = float(value) / endvalue
-    arrow = '-' * int(round(percent * bar_length) - 1) + '>'
-    spaces = ' ' * (bar_length - len(arrow))
-    sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
-    sys.stdout.flush()
-
-
 if __name__ == '__main__':
     if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
         backup_char(installPath, backup_folder, sftp_serv)
         client_dict = build_client_dict(modPath)
         serv_dict = get_serv_dict()
-        remove = RemoveUnusedMods(modPath, client_dict, serv_dict)
-        remove.remove_extra_files
-        'remove_extra_files(modPath, client_dict, serv_dict)'
+        'remove = RemoveUnusedMods(modPath, client_dict, serv_dict)'
+        'remove.remove_extra_files'
+        remove_extra_files(modPath, client_dict, serv_dict)
         download_extra_files(modPath, remotePath, zipFolder, client_dict, serv_dict, sftp_serv)
         print("Update done !", flush=True)
     else:
