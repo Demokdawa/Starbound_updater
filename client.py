@@ -16,7 +16,7 @@ import sys
 # Variables statiques de paramètrage
 zipFolder = "/starbound/zips/"
 backup_folder = "/starbound/backups/"
-sftp_serv = ftputil.FTPHost("163.172.30.174", "starb_ftp", "Darkbarjot78")
+sftp_serv = ftputil.FTPHost("195.154.173.75", "starb-ftp", "Blackstones32")
 installPath = os.getcwd()
 modPath = installPath + "\\mods\\"
 remotePath = "/starbound/mods/"
