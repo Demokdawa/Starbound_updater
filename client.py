@@ -69,7 +69,7 @@ class QueueCounter(Thread):
 # Récupère le dictionnaire serveur
 def get_serv_dict():
     print("Getting update data from server...", flush=True)
-    channel = grpc.insecure_channel('163.172.30.174:50051')
+    channel = grpc.insecure_channel('195.154.173.75:50051')
     stub = starbound_pb2_grpc.DictSenderStub(channel)
     response = stub.send_dict(starbound_pb2.Empty())
     serv_dict_build = dict(response.dictionary)
