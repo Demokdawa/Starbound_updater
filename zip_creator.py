@@ -5,16 +5,17 @@ import sys, os
 import shutil
 
 
-installPath = '/home/starb-ftp/starbound'
+install_path = '/home/starb-ftp/starbound'
 target_path = '/home/starb-ftp/starbound_server/mods/'
+updater_path = '/home/starb-ftp/Starbound_updater'
 
 for filename in os.listdir(target_path):
     if os.path.isdir(target_path + filename):
-        zip_file = installPath + "/zips" + filename + ".zip"
+        zip_file = install_path + "/zips" + filename + ".zip"
         if os.path.exists(zip_file):
-            os.remove(installPath + "/zips/" + filename + ".zip")
-        shutil.make_archive(filename, "zip", target_path, installPath + "/zips/")
-        # shutil.move(installPath + "/" + filename + ".zip", installPath + "/zips/" + filename + ".zip")
+            os.remove(install_path + "/zips/" + filename + ".zip")
+        shutil.make_archive(filename, "zip", target_path, filename)
+        shutil.move(updater_path + "/" + filename + ".zip", install_path + "/zips/" + filename + ".zip")
         print(filename + "   [Archivé] !")
 
 print("Terminé !")
