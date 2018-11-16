@@ -5,9 +5,13 @@ import shutil
 import pwd
 import grp
 
+# CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR
+
+
 install_path = '/home/starb-ftp/starbound'
 target_path = '/home/starb-ftp/starbound_server/mods/'
-updater_path = '/home/starb-ftp/Starbound_updater'
+#updater_path = '/home/starb-ftp/Starbound_updater'
+# Name of user and group to access the FTP files
 UserID = "starb-ftp"
 GroupID = "starb-ftp"
 
@@ -18,7 +22,7 @@ for filename in os.listdir(target_path):
         if os.path.exists(zip_file):
             os.remove(install_path + "/zips/" + filename + ".zip")
         shutil.make_archive(filename, "zip", target_path, filename)
-        shutil.move(updater_path + "/" + filename + ".zip", install_path + "/zips/" + filename + ".zip")
+        shutil.move(os.getcwd() + "/" + filename + ".zip", install_path + "/zips/" + filename + ".zip")
         os.chown(install_path + "/zips/" + filename + ".zip", pwd.getpwnam(UserID).pw_uid, grp.getgrnam(GroupID).gr_gid)
         print(filename + "   [Archivé] !")
 
