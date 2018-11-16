@@ -1,7 +1,4 @@
-from os import path
-from pathlib import Path
-import zipfile
-import sys, os
+import os
 import shutil
 import pwd
 import grp
