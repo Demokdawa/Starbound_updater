@@ -1,4 +1,5 @@
-# coding=utf-8
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 from time import sleep
 from threading import Thread
@@ -12,7 +13,6 @@ import os
 import shutil
 import ftputil
 import zipfile
-import sys
 
 # Variables statiques de paramètrage
 zipFolder = "/starbound/zips/"
@@ -146,23 +146,6 @@ def download_zip_and_extract(target_path, zip_path, name_to_dl, sftp_serv_addres
     os.remove(local_path_to_dl)
 
 
-# FONCTION INUTILISEE - Telecharge un dossier depuis le serveur
-def download_folder(target_path, remote_path, name_to_dl, sftp_serv_address):
-    local_path_to_dl = target_path + name_to_dl
-    remote_path_from_dl = remote_path + name_to_dl
-    if not sftp_serv_address.path.exists(remote_path_from_dl):
-        return
-    if not os.path.exists(local_path_to_dl):
-        os.makedirs(local_path_to_dl)
-
-    dir_list = sftp_serv_address.listdir(remote_path_from_dl)
-    for i in dir_list:
-        if sftp_serv_address.path.isdir(remote_path_from_dl + '/' + i):
-            download_folder(target_path, remote_path, name_to_dl + '/' + i, sftp_serv_address)
-        else:
-            download_file(target_path, remote_path, name_to_dl + '/' + i, sftp_serv_address)
-
-
 # Sauvegarde les données de personnage locales sur le serveur
 def backup_char(local_path, remote_bck_folder, sftp_serv_address):
     local_save = local_path + "\\storage\\player\\"
@@ -170,35 +153,6 @@ def backup_char(local_path, remote_bck_folder, sftp_serv_address):
     for filename in os.listdir(local_save):
         sftp_serv_address.upload(local_save + filename, remote_bck_folder + filename)
     print("Done !", flush=True)
-
-
-# FONCTION INUTILISEE - Barre de chargement progressive
-def progress_bar(value, end_value, bar_length=20):
-    percent = float(value) / end_value
-    arrow = '-' * int(round(percent * bar_length) - 1) + '>'
-    spaces = ' ' * (bar_length - len(arrow))
-    sys.stdout.write("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
-    sys.stdout.flush()
-
-
-# CLASSE INUTILISEE - Classe qui supprime les mods en trop
-class RemoveUnusedMods:
-    def __init__(self, modPath, client_dict, serv_dict):
-        self.target_path = modPath
-        self.client_dict_input = client_dict
-        self.serv_dict_input = serv_dict
-
-    def remove_extra_files_lol(self):
-        for filename_delete, client_hash in self.client_dict_input.items():
-            server_hash = self.serv_dict_input.get(filename_delete)
-            if server_hash != client_hash:
-                print("Suppression de " + filename_delete, flush=True)
-                if os.path.isfile(self.target_path + filename_delete):
-                    os.remove(self.target_path + filename_delete)
-                elif os.path.isdir(self.target_path + filename_delete + "\\"):
-                    shutil.rmtree(self.target_path + filename_delete + "\\", ignore_errors=True)
-                else:
-                    print("Erreur lors de la suppression de" + filename_delete, flush=True)
 
 
 if __name__ == '__main__':
