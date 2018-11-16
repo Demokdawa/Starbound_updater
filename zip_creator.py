@@ -13,8 +13,8 @@ for filename in os.listdir(target_path):
         zip_file = installPath + "/zips" + filename + ".zip"
         if os.path.exists(zip_file):
             os.remove(installPath + "/zips/" + filename + ".zip")
-        shutil.make_archive(filename, "zip", target_path, filename)
-        shutil.move(installPath + "/" + filename + ".zip", installPath + "/zips/" + filename + ".zip")
-        print (filename + "   [Archivé] !")
+        shutil.make_archive(filename, "zip", target_path, installPath + "/zips/")
+        # shutil.move(installPath + "/" + filename + ".zip", installPath + "/zips/" + filename + ".zip")
+        print(filename + "   [Archivé] !")
 
-print ("Terminé !")
+print("Terminé !")
