@@ -3,6 +3,8 @@ from pathlib import Path
 import zipfile
 import sys, os
 import shutil
+import pwd
+import grp
 
 
 install_path = '/home/starb-ftp/starbound'
@@ -16,6 +18,7 @@ for filename in os.listdir(target_path):
             os.remove(install_path + "/zips/" + filename + ".zip")
         shutil.make_archive(filename, "zip", target_path, filename)
         shutil.move(updater_path + "/" + filename + ".zip", install_path + "/zips/" + filename + ".zip")
+        os.chown(install_path + "/zips/" + filename + ".zip", pwd.getpwnam("starb-ftp").pw_uid, grp.getgrnam("starb-ftp").gr_gid)
         print(filename + "   [Archivé] !")
 
 print("Terminé !")
