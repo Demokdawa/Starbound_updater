@@ -5,8 +5,8 @@ import sys, os
 import shutil
 
 
-installPath = os.getcwd()
-target_path = os.getcwd() + "/mods/"
+installPath = '/home/starb-ftp/starbound'
+target_path = '/home/starb-ftp/starbound_server/mods'
 
 for filename in os.listdir(target_path):
     if os.path.isdir(target_path + filename):

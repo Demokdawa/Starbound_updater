@@ -17,7 +17,7 @@ import starbound_pb2_grpc
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 thread_count = 10
-modPath = '/home/starb-ftp/starbound/mods'
+modPath = '/home/starb-ftp/starbound_server/mods'
 
 queue = Queue()
 MyDict = {}
