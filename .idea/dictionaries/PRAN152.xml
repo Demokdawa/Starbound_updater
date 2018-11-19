@@ -2,11 +2,14 @@
   <dictionary name="PRAN152">
     <words>
       <w>archivé</w>
+      <w>backuped</w>
       <w>backuping</w>
       <w>blackstones</w>
       <w>calcul</w>
       <w>calcule</w>
+      <w>caracters</w>
       <w>chargement</w>
+      <w>choosed</w>
       <w>classe</w>
       <w>compteur</w>
       <w>creer</w>
@@ -19,6 +22,7 @@
       <w>fichier</w>
       <w>fonction</w>
       <w>globales</w>
+      <w>grpc</w>
       <w>hashdone</w>
       <w>hashtotal</w>
       <w>inutilisee</w>

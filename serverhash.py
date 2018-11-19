@@ -11,10 +11,17 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
+# CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
+
+# The folder where the mod files are located - aka starbound server mod folder
+mod_path = '/home/starb-ftp/starbound_server/mods'
+# The port used by grpc to connect client and server - make sure to open it on your firewall
+grpc_port = '[::]:50051'
+
+# END OF CONFIG-PART ! -------------------------------------------------------------------------------------------------
+
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 thread_count = 10
-modPath = '/home/starb-ftp/starbound_server/mods'
-
 queue = Queue()
 MyDict = {}
 
@@ -26,8 +33,8 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         return starbound_pb2.MyDict(dictionary=random_dict)
 
     def build_server_dict(self):
-        for filename in os.listdir(modPath):
-            queue.put((modPath, filename))
+        for filename in os.listdir(mod_path):
+            queue.put((mod_path, filename))
         self.thread_creator(queue, thread_count)
         queue.join()
         return MyDict
@@ -61,7 +68,7 @@ class HashCompute(Thread):
 def serve():
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         starbound_pb2_grpc.add_DictSenderServicer_to_server(DictSenderServicer(), server)
-        server.add_insecure_port('[::]:50051')
+        server.add_insecure_port(grpc_port)
         server.start()
         print("Server started !")
         try:

@@ -14,13 +14,26 @@ import shutil
 import ftputil
 import zipfile
 
-# Variables statiques de paramètrage
-zipFolder = "/starbound/zips/"
-backup_folder = "/starbound/backups/"
-sftp_serv = ftputil.FTPHost("195.154.173.75", "starb-ftp", "Blackstones32")
-installPath = os.getcwd()
-modPath = installPath + "\\mods\\"
-remotePath = "/starbound/mods/"
+# CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
+
+# The folder where the zips files will be stored - make sure the permissions are correctly set - It's and FTP PATH
+zip_repo = '/starbound/zips/'
+# The folder where the caracters will be backuped on the server - It's and FTP PATH
+backup_folder = '/starbound/backups/'
+# Specify the address, user, and password to access ftp
+ftp_serv = ftputil.FTPHost("195.154.173.75", "starb-ftp", "Blackstones32")
+# By default, the root directory where the starbound client files are located - NO CHANGES NEEDED
+install_path = os.getcwd()
+# By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
+mod_path_client = install_path + "\\mods\\"
+# The folder where the mod files are located - aka starbound server mod folder - It's and FTP PATH
+mod_path_server = "/starbound/mods/"
+# The ip and port used by grpc to connect client and server - make sure to open the port on your firewall
+grpc_connect = '195.154.173.75:50051'
+
+# END OF CONFIG-PART ! -------------------------------------------------------------------------------------------------
+
+# Variables statiques
 thread_count = 10
 
 # Variables globales
@@ -63,13 +76,12 @@ class QueueCounter(Thread):
         global hashdone
         while hashdone < self.hashtotal:
             print(str(hashdone) + '/' + str(self.hashtotal), end='\r', flush=True)
-            "self.progressBar(hashdone, self.hashtotal)"
 
 
 # Récupère le dictionnaire serveur
 def get_serv_dict():
     print("Getting update data from server...", flush=True)
-    channel = grpc.insecure_channel('195.154.173.75:50051')
+    channel = grpc.insecure_channel(grpc_connect)
     stub = starbound_pb2_grpc.DictSenderStub(channel)
     response = stub.send_dict(starbound_pb2.Empty())
     serv_dict_build = dict(response.dictionary)
@@ -156,15 +168,13 @@ def backup_char(local_path, remote_bck_folder, sftp_serv_address):
 
 
 if __name__ == '__main__':
-    if os.path.isfile(installPath + "\\win64\\" + "starbound.exe"):
+    if os.path.isfile(install_path + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
-        backup_char(installPath, backup_folder, sftp_serv)
-        client_dict = build_client_dict(modPath)
+        backup_char(install_path, backup_folder, ftp_serv)
+        client_dict = build_client_dict(mod_path_client)
         serv_dict = get_serv_dict()
-        'remove = RemoveUnusedMods(modPath, client_dict, serv_dict)'
-        'remove.remove_extra_files'
-        remove_extra_files(modPath, client_dict, serv_dict)
-        download_extra_files(modPath, remotePath, zipFolder, client_dict, serv_dict, sftp_serv)
+        remove_extra_files(mod_path_client, client_dict, serv_dict)
+        download_extra_files(mod_path_client, mod_path_server, zip_repo, client_dict, serv_dict, ftp_serv)
         print("Update done !", flush=True)
     else:
         print("Starbound installation folder not found", flush=True)
