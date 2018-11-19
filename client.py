@@ -27,7 +27,7 @@ install_path = os.getcwd()
 # By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
 mod_path_client = install_path + "\\mods\\"
 # The folder where the mod files are located - aka starbound server mod folder - It's and FTP PATH
-mod_path_server = '/starbound_server/mods'
+mod_path_server = "/starbound_server/mods"
 # The ip and port used by grpc to connect client and server - make sure to open the port on your firewall
 grpc_connect = '195.154.173.75:50051'
 
