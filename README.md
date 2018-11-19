@@ -2,7 +2,7 @@
 
 To-Do : <br>
   -Add progressBar <br>
-  -More code cleaning and class implementations <br>
+  -More code cleaning <br>
   -GUI Interface <br>
   -Configuration system <br>
   -Make threads quit for more safety
