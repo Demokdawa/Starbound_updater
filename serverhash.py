@@ -28,16 +28,16 @@ MyDict = {}
 
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
-    def send_dict(self, request, context):
-        random_dict = self.build_server_dict()
-        return starbound_pb2.MyDict(dictionary=random_dict)
-
     def build_server_dict(self):
         for filename in os.listdir(mod_path):
             queue.put((mod_path, filename))
         self.thread_creator(queue, thread_count)
         queue.join()
         return MyDict
+
+    def send_dict(self, request, context):
+        random_dict = self.build_server_dict()
+        return starbound_pb2.MyDict(dictionary=random_dict)
 
     def thread_creator(self, queue, thread_count):
         for i in range(thread_count):
