@@ -37,6 +37,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     def send_dict(self, request, context):
         random_dict = self.build_server_dict()
+        print(random_dict)
         return starbound_pb2.MyDict(dictionary=random_dict)
 
     def thread_creator(self, queue, thread_count):
