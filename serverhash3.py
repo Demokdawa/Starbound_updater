@@ -26,7 +26,7 @@ def build_server_dict():
             print("Dictionnaire rempli")
     with Pool(processes=4) as pool:
             # Maybe don't let it as a one-liner, especially if you don't understand it fully
-            pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict)
+            print(pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict))
     print(ret_dict)
 
 
@@ -34,7 +34,7 @@ def hash_compute(filename):
         if os.path.isdir(mod_path + '/' + filename):
             folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
             hash_tuple = (filename, folder_hash)
-            print(hash_tuple[0])
+            print(hash_tuple)
             return hash_tuple
         else:
             opened_file = open(mod_path + '/' + filename, 'rb')
@@ -42,7 +42,7 @@ def hash_compute(filename):
             md5_hash = hashlib.md5(read_file)
             file_hash = md5_hash.hexdigest()
             hash_tuple = (filename, file_hash)
-            print(hash_tuple[0])
+            print(hash_tuple)
             return hash_tuple
 
 
