@@ -70,5 +70,29 @@ def serve():
         server.stop(0)
 
 
+def build_server_dict():
+    ret_dict = {}
+
+    def __add_to_dict(hash_tuple):
+            f, h = hash_tuple
+            ret_dict[f] = h
+    with Pool(processes=4) as pool:
+            # Maybe don't let it as a one-liner, especially if you don't understand it fully
+            pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict)
+    return ret_dict
+
+def hash_compute(filename):
+        if os.path.isdir(mod_path + '/' + filename):
+                folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
+                hash_tuple = (filename, folder_hash)
+                return hash_tuple
+        else:
+                opened_file = open(mod_path + '/' + filename, 'rb')
+                read_file = opened_file.read()
+                md5_hash = hashlib.md5(read_file)
+                file_hash = md5_hash.hexdigest()
+                hash_tuple = (filename, file_hash)
+                return hash_tuple
+
 if __name__ == '__main__':
-    serve()
+    #serve()
