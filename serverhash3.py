@@ -33,7 +33,6 @@ def build_server_dict():
 
     pool = Pool(processes=4)
     pool.map(hash_compute, os.listdir(mod_path))#, callback=__add_to_dict, error_callback=__error_map)
-    print(ret_dict)
 
 
 def hash_compute(filename):
@@ -56,3 +55,4 @@ def hash_compute(filename):
 
 if __name__ == '__main__':
     build_server_dict()
+    print(ret_dict)
