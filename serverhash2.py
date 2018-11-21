@@ -31,7 +31,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
     def build_server_dict(self):
         ret_dict = {}
 
-        def __add_to_dict(*hash_tuple):
+        def __add_to_dict(hash_tuple):
             print(hash_tuple)
             #ret_dict[f] = v
         with Pool(processes=4) as pool:
