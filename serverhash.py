@@ -3,6 +3,7 @@
 from concurrent import futures
 from threading import Thread
 from queue import Queue
+from multiprocessing import Pool
 import time
 import checksumdir
 import os
@@ -23,19 +24,28 @@ grpc_port = '[::]:50051'
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 thread_count = 10
 queue = Queue()
-MyDict = {}
 
 
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
+    def builder_server_dict(self):
+        ret_dict = {}
+        with Pool(processes=4) as pool:
+            # Maybe don't let it as a one-liner, especially if you don't understand it fully
+            pool.map_async(self.compute_hash, os.listdir(...), lambda k, v: ret_dict[k] = v)
+            return ret_dict
+
+
+
     def build_server_dict(self):
+        ret_dict = {}
         for filename in os.listdir(mod_path):
             queue.put((mod_path, filename))
         self.thread_creator(queue, thread_count)
         queue.join()
-        print(MyDict)
+        print(self.ret_dict)
         print("creation du dictionnaire....")
-        return MyDict
+        return self.ret_dict
 
     def send_dict(self, request, context):
         random_dict = self.build_server_dict()
