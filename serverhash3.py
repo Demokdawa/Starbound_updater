@@ -1,14 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from concurrent import futures
 from multiprocessing import Pool
-import time
 import checksumdir
 import os
 import hashlib
-import grpc
-import starbound_pb2
-import starbound_pb2_grpc
 
 # CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
 
@@ -28,6 +23,7 @@ def build_server_dict():
     def __add_to_dict(hash_tuple):
             f, h = hash_tuple
             ret_dict[f] = h
+            print("Dictionnaire rempli")
     with Pool(processes=4) as pool:
             # Maybe don't let it as a one-liner, especially if you don't understand it fully
             pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict)
