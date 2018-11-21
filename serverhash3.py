@@ -39,7 +39,6 @@ def hash_compute(filename):
         if os.path.isdir(mod_path + '/' + filename):
             folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
             hash_tuple = (filename, folder_hash)
-            print(hash_tuple)
             return hash_tuple
         else:
             opened_file = open(mod_path + '/' + filename, 'rb')
@@ -47,7 +46,6 @@ def hash_compute(filename):
             md5_hash = hashlib.md5(read_file)
             file_hash = md5_hash.hexdigest()
             hash_tuple = (filename, file_hash)
-            print(hash_tuple)
             return hash_tuple
 
 
