@@ -16,10 +16,10 @@ grpc_port = '[::]:50051'
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-ret_dict = {}
-
 
 def build_server_dict():
+
+    ret_dict = {}
 
     def __error_map(n):
         lol = n
@@ -29,28 +29,26 @@ def build_server_dict():
     def __add_to_dict(hash_tuple):
         f, h = hash_tuple
         ret_dict[f] = h
-        print("Dictionnaire rempli")
+        print("Dictionnaire changed")
 
     pool = Pool(processes=4)
-    pool.map(hash_compute, os.listdir(mod_path))#, callback=__add_to_dict, error_callback=__error_map)
+    pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict, error_callback=__error_map)
 
 
 def hash_compute(filename):
         if os.path.isdir(mod_path + '/' + filename):
             folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
-            ret_dict[filename] = folder_hash
-            #hash_tuple = (filename, folder_hash)
-            #print(hash_tuple)
-            #return hash_tuple
+            hash_tuple = (filename, folder_hash)
+            print(hash_tuple)
+            return hash_tuple
         else:
             opened_file = open(mod_path + '/' + filename, 'rb')
             read_file = opened_file.read()
             md5_hash = hashlib.md5(read_file)
             file_hash = md5_hash.hexdigest()
-            ret_dict[filename] = file_hash
-            #hash_tuple = (filename, file_hash)
-            #print(hash_tuple)
-            #return hash_tuple
+            hash_tuple = (filename, file_hash)
+            print(hash_tuple)
+            return hash_tuple
 
 
 if __name__ == '__main__':
