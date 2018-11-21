@@ -26,7 +26,7 @@ def build_server_dict():
             print("Dictionnaire rempli")
     with Pool(processes=4) as pool:
             # Maybe don't let it as a one-liner, especially if you don't understand it fully
-            pool.map.async(hash_compute, os.listdir(mod_path), callback=__add_to_dict)
+            pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict)
     print(ret_dict)
 
 
