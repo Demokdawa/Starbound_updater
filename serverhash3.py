@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from multiprocessing import Pool
-import multiprocessing
 import checksumdir
 import os
 import hashlib
@@ -31,8 +30,8 @@ def build_server_dict():
         ret_dict[f] = h
         print("Dictionnaire rempli")
 
-    p = multiprocessing.Pool(4)
-    p.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict, error_callback=__error_map)
+    pool = Pool(processes=4)
+    pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict, error_callback=__error_map)
     print(ret_dict)
 
 
@@ -40,6 +39,7 @@ def hash_compute(filename):
         if os.path.isdir(mod_path + '/' + filename):
             folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
             hash_tuple = (filename, folder_hash)
+            print(hash_tuple)
             return hash_tuple
         else:
             opened_file = open(mod_path + '/' + filename, 'rb')
@@ -47,6 +47,7 @@ def hash_compute(filename):
             md5_hash = hashlib.md5(read_file)
             file_hash = md5_hash.hexdigest()
             hash_tuple = (filename, file_hash)
+            print(hash_tuple)
             return hash_tuple
 
 
