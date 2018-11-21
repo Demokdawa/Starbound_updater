@@ -32,8 +32,8 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         ret_dict = {}
 
         def __add_to_dict(hash_tuple):
-            print(hash_tuple)
-            #ret_dict[f] = v
+            f, h = hash_tuple
+            ret_dict[f] = h
         with Pool(processes=4) as pool:
             # Maybe don't let it as a one-liner, especially if you don't understand it fully
             pool.map_async(self.hash_compute, os.listdir(mod_path), callback=__add_to_dict)
@@ -41,7 +41,6 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     def hash_compute(self, filename):
             if os.path.isdir(mod_path + '/' + filename):
-                # self.MyDict[filename] = checksumdir.dirhash(mod_path + '/' + filename)
                 folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
                 hash_tuple = (filename, folder_hash)
                 return hash_tuple
@@ -49,7 +48,6 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
                 opened_file = open(mod_path + '/' + filename, 'rb')
                 read_file = opened_file.read()
                 md5_hash = hashlib.md5(read_file)
-                # self.MyDict[filename] = md5_hash.hexdigest()
                 file_hash = md5_hash.hexdigest()
                 hash_tuple = (filename, file_hash)
                 return hash_tuple
@@ -57,8 +55,6 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
     def send_dict(self, request, context):
         random_dict = self.build_server_dict()
         return starbound_pb2.MyDict(dictionary=random_dict)
-
-
 
 
 def serve():
