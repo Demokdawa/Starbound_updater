@@ -33,6 +33,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
             queue.put((mod_path, filename))
         self.thread_creator(queue, thread_count)
         queue.join()
+        print(MyDict)
         print("creation du dictionnaire....")
         return MyDict
 
