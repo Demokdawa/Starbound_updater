@@ -19,6 +19,8 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 def build_server_dict():
     ret_dict = {}
+    dirtest = os.listdir(mod_path)
+    print(dirtest)
 
     def __add_to_dict(hash_tuple):
             f, h = hash_tuple
