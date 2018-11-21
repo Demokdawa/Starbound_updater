@@ -32,7 +32,7 @@ def build_server_dict():
         print("Dictionnaire changed")
 
     pool = Pool(processes=4)
-    for filename in os.listdir(mod_path)
+    for filename in os.listdir(mod_path):
         pool.apply_async(hash_compute, filename , callback=__add_to_dict, error_callback=__error_map)
 
 
