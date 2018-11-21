@@ -20,13 +20,18 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 def build_server_dict():
     ret_dict = {}
 
+    def __error_map(n):
+        lol = n
+        print(lol)
+        print("does not work")
+
     def __add_to_dict(hash_tuple):
-            f, h = hash_tuple
-            ret_dict[f] = h
-            print("Dictionnaire rempli")
+        f, h = hash_tuple
+        ret_dict[f] = h
+        print("Dictionnaire rempli")
     with Pool(processes=4) as pool:
-            # Maybe don't let it as a one-liner, especially if you don't understand it fully
-            print(pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict))
+        # Maybe don't let it as a one-liner, especially if you don't understand it fully
+        print(pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict, error_callback=__error_map))
     print(ret_dict)
 
 
