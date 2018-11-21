@@ -3,6 +3,7 @@
 from concurrent import futures
 from threading import Thread
 from queue import Queue
+from collections import namedtuple
 from multiprocessing import Pool
 import time
 import checksumdir
@@ -11,6 +12,7 @@ import hashlib
 import grpc
 import starbound_pb2
 import starbound_pb2_grpc
+
 
 # CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
 
@@ -29,8 +31,9 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
     def build_server_dict(self):
         ret_dict = {}
 
-        def __add_to_dict(f, v):
-            ret_dict[f] = v
+        def __add_to_dict(*hash_tuple):
+            print(hash_tuple)
+            #ret_dict[f] = v
         with Pool(processes=4) as pool:
             # Maybe don't let it as a one-liner, especially if you don't understand it fully
             pool.map_async(self.hash_compute, os.listdir(mod_path), callback=__add_to_dict)
@@ -40,14 +43,16 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
             if os.path.isdir(mod_path + '/' + filename):
                 # self.MyDict[filename] = checksumdir.dirhash(mod_path + '/' + filename)
                 folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
-                return filename, folder_hash
+                hash_tuple = (filename, folder_hash)
+                return hash_tuple
             else:
                 opened_file = open(mod_path + '/' + filename, 'rb')
                 read_file = opened_file.read()
                 md5_hash = hashlib.md5(read_file)
                 # self.MyDict[filename] = md5_hash.hexdigest()
                 file_hash = md5_hash.hexdigest()
-                return filename, file_hash
+                hash_tuple = (filename, file_hash)
+                return hash_tuple
 
     def send_dict(self, request, context):
         random_dict = self.build_server_dict()
