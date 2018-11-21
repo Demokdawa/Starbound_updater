@@ -33,7 +33,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
             ret_dict[f] = v
         with Pool(processes=4) as pool:
             # Maybe don't let it as a one-liner, especially if you don't understand it fully
-            pool.map_async(self.compute_hash, os.listdir(mod_path), callback=__add_to_dict)
+            pool.map_async(self.hash_compute, os.listdir(mod_path), callback=__add_to_dict)
         return ret_dict
 
     def hash_compute(self, filename):
