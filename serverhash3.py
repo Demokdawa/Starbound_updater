@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from multiprocessing import Pool
+import multiprocessing
 import checksumdir
 import os
 import hashlib
@@ -29,9 +30,9 @@ def build_server_dict():
         f, h = hash_tuple
         ret_dict[f] = h
         print("Dictionnaire rempli")
-    with Pool(processes=4) as pool:
-        # Maybe don't let it as a one-liner, especially if you don't understand it fully
-        print(pool.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict, error_callback=__error_map))
+
+    p = multiprocessing.Pool(4)
+    print(p.map_async(hash_compute, os.listdir(mod_path), callback=__add_to_dict, error_callback=__error_map))
     print(ret_dict)
 
 
