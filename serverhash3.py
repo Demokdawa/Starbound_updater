@@ -42,6 +42,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
             pool.apply_async(self.hash_compute, (filename, ), callback=__add_to_dict, error_callback=__error_callback)
         pool.close()
         pool.join()
+        print(ret_dict)
         print("Dictionary sent")
         return ret_dict
 
