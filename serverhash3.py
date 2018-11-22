@@ -1,9 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from concurrent import futures
 from multiprocessing import Pool
+import time
 import checksumdir
 import os
 import hashlib
+import grpc
+import starbound_pb2
+import starbound_pb2_grpc
 
 # CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
 
@@ -17,43 +22,61 @@ grpc_port = '[::]:50051'
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
-def build_server_dict():
+class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
-    ret_dict = {}
+    def build_server_dict(self):
 
-    def __error_callback(n):
-        print(n)
-        print("does not work")
+        ret_dict = {}
 
-    def __add_to_dict(hash_tuple):
-        f, h = hash_tuple
-        ret_dict[f] = h
-        print("Dictionnaire changed")
+        def __error_callback(n):
+            print(n)
+            print("does not work")
 
-    pool = Pool(processes=20)
-    for filename in os.listdir(mod_path):
-        pool.apply_async(hash_compute, (filename), callback=__add_to_dict, error_callback=__error_callback)
-    pool.close()
-    pool.join()
-    print(ret_dict)
-    print("Dictionary sent")
+        def __add_to_dict(hash_tuple):
+            f, h = hash_tuple
+            ret_dict[f] = h
+            print("Dictionnaire changed")
+
+        pool = Pool(processes=20)
+        for filename in os.listdir(mod_path):
+            pool.apply_async(self.hash_compute, (filename, ), callback=__add_to_dict, error_callback=__error_callback)
+        pool.close()
+        pool.join()
+        print("Dictionary sent")
+        return ret_dict
+
+    def hash_compute(self, filename):
+            if os.path.isdir(mod_path + '/' + filename):
+                folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
+                hash_tuple = (filename, folder_hash)
+                print(hash_tuple)
+                return hash_tuple
+            else:
+                opened_file = open(mod_path + '/' + filename, 'rb')
+                read_file = opened_file.read()
+                md5_hash = hashlib.md5(read_file)
+                file_hash = md5_hash.hexdigest()
+                hash_tuple = (filename, file_hash)
+                print(hash_tuple)
+                return hash_tuple
+
+    def send_dict(self, request, context):
+        random_dict = self.build_server_dict()
+        return starbound_pb2.MyDict(dictionary=random_dict)
 
 
-def hash_compute(filename):
-        if os.path.isdir(mod_path + '/' + filename):
-            folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
-            hash_tuple = (filename, folder_hash)
-            print(hash_tuple)
-            return hash_tuple
-        else:
-            opened_file = open(mod_path + '/' + filename, 'rb')
-            read_file = opened_file.read()
-            md5_hash = hashlib.md5(read_file)
-            file_hash = md5_hash.hexdigest()
-            hash_tuple = (filename, file_hash)
-            print(hash_tuple)
-            return hash_tuple
+def serve():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    starbound_pb2_grpc.add_DictSenderServicer_to_server(DictSenderServicer(), server)
+    server.add_insecure_port(grpc_port)
+    server.start()
+    print("Server started !")
+    try:
+        while True:
+            time.sleep(_ONE_DAY_IN_SECONDS)
+    except KeyboardInterrupt:
+        server.stop(0)
 
 
 if __name__ == '__main__':
-    build_server_dict()
+    serve()
