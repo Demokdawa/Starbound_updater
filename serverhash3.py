@@ -21,7 +21,8 @@ def build_server_dict():
 
     ret_dict = {}
 
-    def __error_callback():
+    def __error_callback(n):
+        print(n)
         print("does not work")
 
     def __add_to_dict(hash_tuple):
