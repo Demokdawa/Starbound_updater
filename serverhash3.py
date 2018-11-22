@@ -21,9 +21,7 @@ def build_server_dict():
 
     ret_dict = {}
 
-    def __error_map(n):
-        lol = n
-        print(lol)
+    def __error_callback():
         print("does not work")
 
     def __add_to_dict(hash_tuple):
@@ -33,12 +31,11 @@ def build_server_dict():
 
     pool = Pool(processes=20)
     for filename in os.listdir(mod_path):
-        pool.apply_async(hash_compute, (filename, ), callback=__add_to_dict, error_callback=__error_map)
+        pool.apply_async(hash_compute, (filename), callback=__add_to_dict, error_callback=__error_callback)
     pool.close()
     pool.join()
     print(ret_dict)
     print("Dictionary sent")
-
 
 
 def hash_compute(filename):
