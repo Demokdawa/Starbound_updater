@@ -28,7 +28,6 @@ def build_server_dict():
     def __add_to_dict(hash_tuple):
         f, h = hash_tuple
         ret_dict[f] = h
-        print("Dictionnaire changed")
 
     pool = Pool(processes=20)
     for filename in os.listdir(mod_path):

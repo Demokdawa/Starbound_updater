@@ -172,7 +172,7 @@ if __name__ == '__main__':
     if os.path.isfile(install_path + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
         # backup_char(install_path, backup_folder, ftp_serv)
-        # client_dict = build_client_dict(mod_path_client)
+        #client_dict = build_client_dict(mod_path_client)
         serv_dict = get_serv_dict()
         print(serv_dict)
         remove_extra_files(mod_path_client, client_dict, serv_dict)
