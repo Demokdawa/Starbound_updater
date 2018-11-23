@@ -89,7 +89,7 @@ def serve():
     starbound_pb2_grpc.add_DictSenderServicer_to_server(DictSenderServicer(), server)
     server.add_insecure_port(grpc_port)
     server.start()
-    print("Server started !")
+    logger.info("Server started !")
     try:
         while True:
             time.sleep(_ONE_DAY_IN_SECONDS)
