@@ -10,7 +10,6 @@ import grpc
 import starbound_pb2
 import starbound_pb2_grpc
 
-
 # CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
 
 # The folder where the mod files are located - aka starbound server mod folder
@@ -26,31 +25,49 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     def build_server_dict(self):
+
         ret_dict = {}
+
+        def __error_callback(n):
+            print(n)
+            print("does not work")
 
         def __add_to_dict(hash_tuple):
             f, h = hash_tuple
             ret_dict[f] = h
-        with Pool(processes=4) as pool:
-            # Maybe don't let it as a one-liner, especially if you don't understand it fully
-            pool.map_async(self.hash_compute, os.listdir(mod_path), callback=__add_to_dict)
+            print("Dictionnaire changed")
+
+        pool = Pool(processes=20)
+        for filename in os.listdir(mod_path):
+            pool.apply_async(self.hash_compute, (filename, ), callback=__add_to_dict, error_callback=__error_callback)
+        pool.close()
+        pool.join()
+        print(ret_dict)
+        print("Dictionary sent")
         return ret_dict
 
     def hash_compute(self, filename):
-        if os.path.isdir(mod_path + '/' + filename):
-            folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
-            hash_tuple = (filename, folder_hash)
-            return hash_tuple
-        else:
-            opened_file = open(mod_path + '/' + filename, 'rb')
-            read_file = opened_file.read()
-            md5_hash = hashlib.md5(read_file)
-            file_hash = md5_hash.hexdigest()
-            hash_tuple = (filename, file_hash)
-            return hash_tuple
+            if os.path.isdir(mod_path + '/' + filename):
+                folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
+                hash_tuple = (filename, folder_hash)
+                print(hash_tuple)
+                return hash_tuple
+            else:
+                opened_file = open(mod_path + '/' + filename, 'rb')
+                read_file = opened_file.read()
+                md5_hash = hashlib.md5(read_file)
+                file_hash = md5_hash.hexdigest()
+                hash_tuple = (filename, file_hash)
+                print(hash_tuple)
+                return hash_tuple
 
     def send_dict(self, request, context):
-        random_dict = self.build_server_dict()
+        test_dict = {}
+        test_dict['a'] = '2023767489'
+        random_dict = test_dict
+        ret_dict = self.build_server_dict()
+        print(ret_dict)
+        print(random_dict)
         return starbound_pb2.MyDict(dictionary=random_dict)
 
 
