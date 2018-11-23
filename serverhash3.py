@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from concurrent import futures
 from multiprocessing import Pool
+from logging.handlers import RotatingFileHandler
 import time
 import checksumdir
 import os
@@ -9,6 +10,7 @@ import hashlib
 import grpc
 import starbound_pb2
 import starbound_pb2_grpc
+import logging
 
 # CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
 
@@ -20,6 +22,17 @@ grpc_port = '[::]:50051'
 # END OF CONFIG-PART ! -------------------------------------------------------------------------------------------------
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
+file_handler = RotatingFileHandler('activity.log', 'a', 1000000, 1)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.DEBUG)
+logger.addHandler(stream_handler)
 
 
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
@@ -50,7 +63,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
             if os.path.isdir(mod_path + '/' + filename):
                 folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
                 hash_tuple = (filename, folder_hash)
-                print(hash_tuple)
+                logger.info(hash_tuple)
                 return hash_tuple
             else:
                 opened_file = open(mod_path + '/' + filename, 'rb')
@@ -58,7 +71,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
                 md5_hash = hashlib.md5(read_file)
                 file_hash = md5_hash.hexdigest()
                 hash_tuple = (filename, file_hash)
-                print(hash_tuple)
+                logger.info(hash_tuple)
                 return hash_tuple
 
     def send_dict(self, request, context):
@@ -66,8 +79,8 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         test_dict['a'] = '2023767489'
         random_dict = test_dict
         ret_dict = self.build_server_dict()
-        print(ret_dict)
-        print(random_dict)
+        logger.info(ret_dict)
+        logger.info(random_dict)
         return starbound_pb2.MyDict(dictionary=random_dict)
 
 
