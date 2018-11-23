@@ -42,7 +42,8 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         #    pool.apply_async(self.hash_compute, (filename, ), callback=__add_to_dict, error_callback=__error_callback)
         #pool.close()
         #pool.join()
-        ret_dict['b'] = '097856686'
+        for filename in os.listdir(mod_path):
+            __add_to_dict(self.hash_compute(filename))
         print("Dictionary sent")
         return ret_dict
 
@@ -50,7 +51,6 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
             if os.path.isdir(mod_path + '/' + filename):
                 folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
                 hash_tuple = (filename, folder_hash)
-                print(hash_tuple)
                 return hash_tuple
             else:
                 opened_file = open(mod_path + '/' + filename, 'rb')
@@ -58,7 +58,6 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
                 md5_hash = hashlib.md5(read_file)
                 file_hash = md5_hash.hexdigest()
                 hash_tuple = (filename, file_hash)
-                print(hash_tuple)
                 return hash_tuple
 
     def send_dict(self, request, context):
