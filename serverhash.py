@@ -21,24 +21,25 @@ grpc_port = '[::]:50051'
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
+def build_server_dict():
+    ret_dict = {}
+    for filename in os.listdir(mod_path):
+        if os.path.isdir(mod_path + '/' + filename):
+            folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
+            ret_dict[filename] = folder_hash
+        else:
+            opened_file = open(mod_path + '/' + filename, 'rb')
+            read_file = opened_file.read()
+            md5_hash = hashlib.md5(read_file)
+            file_hash = md5_hash.hexdigest()
+            ret_dict[filename] = file_hash
+    return ret_dict
+
+
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
-    def build_server_dict(self):
-        ret_dict = {}
-        for filename in os.listdir(mod_path):
-            if os.path.isdir(mod_path + '/' + filename):
-                folder_hash = checksumdir.dirhash(mod_path + '/' + filename)
-                ret_dict[filename] = folder_hash
-            else:
-                opened_file = open(mod_path + '/' + filename, 'rb')
-                read_file = opened_file.read()
-                md5_hash = hashlib.md5(read_file)
-                file_hash = md5_hash.hexdigest()
-                ret_dict[filename] = file_hash
-        return ret_dict
-
     def send_dict(self, request, context):
-        random_dict = self.build_server_dict()
+        random_dict = build_server_dict()
         print(random_dict)
         return starbound_pb2.MyDict(dictionary=random_dict)
 
