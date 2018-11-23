@@ -27,7 +27,6 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
     def build_server_dict(self):
 
         ret_dict = {}
-        ret_dict['a'] = 1
 
         def __error_callback(n):
             print(n)
@@ -63,9 +62,10 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
                 return hash_tuple
 
     def send_dict(self, request, context):
-        ret_dict = {}
-        ret_dict['a'] = '2023767489'
-        random_dict = ret_dict  # self.build_server_dict()
+        #ret_dict = {}
+        #ret_dict['a'] = '2023767489'
+        #random_dict = ret_dict
+        random_dict = self.build_server_dict()
         print(random_dict)
         return starbound_pb2.MyDict(dictionary=random_dict)
 
