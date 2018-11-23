@@ -37,11 +37,11 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
             ret_dict[f] = h
             print("Dictionnaire changed")
 
-        #pool = Pool(processes=20)
+        pool = Pool(processes=20)
         #for filename in os.listdir(mod_path):
         #    pool.apply_async(self.hash_compute, (filename, ), callback=__add_to_dict, error_callback=__error_callback)
-        #pool.close()
-        #pool.join()
+        pool.close()
+        pool.join()
         for filename in os.listdir(mod_path):
             __add_to_dict(self.hash_compute(filename))
         print("Dictionary sent")
