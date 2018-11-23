@@ -65,7 +65,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         test_dict = {}
         test_dict['a'] = '2023767489'
         random_dict = test_dict
-        #self.build_server_dict()
+        self.build_server_dict()
         print(random_dict)
         return starbound_pb2.MyDict(dictionary=random_dict)
 
