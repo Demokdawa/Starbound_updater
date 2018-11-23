@@ -28,21 +28,21 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
         ret_dict = {}
 
-        #def __error_callback(n):
-        #    print(n)
-        #    print("does not work")
+        def __error_callback(n):
+            print(n)
+            print("does not work")
 
         def __add_to_dict(hash_tuple):
             f, h = hash_tuple
             ret_dict[f] = h
             print("Dictionnaire changed")
 
-        pool = Pool(processes=20)
-        for filename in os.listdir(mod_path):
-            pool.apply_async(self.hash_compute, (filename, ), callback=__add_to_dict)#, error_callback=__error_callback)
-        pool.close()
-        pool.join()
-        print(ret_dict)
+        #pool = Pool(processes=20)
+        #for filename in os.listdir(mod_path):
+        #    pool.apply_async(self.hash_compute, (filename, ), callback=__add_to_dict, error_callback=__error_callback)
+        #pool.close()
+        #pool.join()
+        ret_dict['b'] = '097856686'
         print("Dictionary sent")
         return ret_dict
 
@@ -65,7 +65,8 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         test_dict = {}
         test_dict['a'] = '2023767489'
         random_dict = test_dict
-        self.build_server_dict()
+        ret_dict = self.build_server_dict()
+        print(ret_dict)
         print(random_dict)
         return starbound_pb2.MyDict(dictionary=random_dict)
 
