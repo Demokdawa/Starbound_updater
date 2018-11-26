@@ -2,10 +2,17 @@ syntax = "proto3";
 
 service DictSender {
 rpc send_dict(Empty) returns(MyDict) {};
+}
 
+service GetConfig {
+rpc send_config(Empty) returns(MyConfig) {};
 }
 
 message MyDict {
+map<string,string> dictionary = 1;
+}
+
+message MyConfig {
 map<string,string> dictionary = 1;
 }
 

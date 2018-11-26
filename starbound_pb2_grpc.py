@@ -25,7 +25,7 @@ class DictSenderServicer(object):
   # missing associated documentation comment in .proto file
   pass
 
-  def send_dict(self, request, context):
+  def add_DictSenderServicer_to_serversend_dict(self, request, context):
     # missing associated documentation comment in .proto file
     pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
