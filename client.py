@@ -78,6 +78,17 @@ class QueueCounter(Thread):
             print(str(hashdone) + '/' + str(self.hashtotal), end='\r', flush=True)
 
 
+# Récupère les infos serveur
+def get_serv_conf():
+    print("Getting config from server...", flush=True)
+    channel = grpc.insecure_channel(grpc_connect)
+    stub = starbound_pb2_grpc.GetConfigStub(channel)
+    response = stub.send_config(starbound_pb2.Empty())
+    serv_conf_build = dict(response.dictionary)
+    print("Done !")
+    return serv_conf_build
+
+
 # Récupère le dictionnaire serveur
 def get_serv_dict():
     print("Getting update data from server...", flush=True)
@@ -171,12 +182,14 @@ def backup_char(local_path, remote_bck_folder, sftp_serv_address):
 if __name__ == '__main__':
     if os.path.isfile(install_path + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
+        serv_conf = get_serv_conf()
+        print(serv_conf)
         # backup_char(install_path, backup_folder, ftp_serv)
         # client_dict = build_client_dict(mod_path_client)
-        serv_dict = get_serv_dict()
-        print(serv_dict)
-        remove_extra_files(mod_path_client, client_dict, serv_dict)
-        download_extra_files(mod_path_client, mod_path_server, zip_repo, client_dict, serv_dict, ftp_serv)
+        # serv_dict = get_serv_dict()
+        # print(serv_dict)
+        # remove_extra_files(mod_path_client, client_dict, serv_dict)
+        # download_extra_files(mod_path_client, mod_path_server, zip_repo, client_dict, serv_dict, ftp_serv)
         print("Update done !", flush=True)
     else:
         print("Starbound installation folder not found", flush=True)
