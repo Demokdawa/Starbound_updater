@@ -25,11 +25,6 @@ ftp_pass = "Blackstones32"
 zip_repo = '/starbound/zips/'
 # The folder where the caracters will be backuped on the server - It's and FTP PATH
 backup_folder = '/starbound/backups/'
-# By default, the root directory where the starbound client files are located - NO CHANGES NEEDED
-install_path_client = os.getcwd()
-# By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
-mod_path_client = install_path_client + "\\mods\\"
-
 
 # END OF CONFIG-PART ! -------------------------------------------------------------------------------------------------
 
@@ -42,8 +37,6 @@ def build_conf_dict():
             "ftp_pass": ftp_pass,
             "zip_repo": zip_repo,
             "backup_folder": backup_folder,
-            "install_path_client": 'install_path_client',
-            "mod_path_client": mod_path_client,
             "mod_path_ftp": mod_path_ftp
     }
     return conf_dict

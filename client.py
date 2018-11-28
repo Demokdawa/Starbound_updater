@@ -23,13 +23,15 @@ import zipfile
 # Specify the address, user, and password to access ftp
 # ftp_serv = ftputil.FTPHost("195.154.173.75", "starb-ftp", "Blackstones32")
 # By default, the root directory where the starbound client files are located - NO CHANGES NEEDED
-install_path_client = ""
+install_path_client = os.getcwd()
 # By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
-# mod_path_client = install_path + "\\mods\\"
+mod_path_client = install_path_client + "\\mods\\"
 # The folder where the mod files are located - aka starbound server mod folder - It's and FTP PATH
 # mod_path_server = "/starbound_server/mods/"
 # The ip and port used by grpc to connect client and server - make sure to open the port on your firewall
 grpc_connect = '195.154.173.75:50051'
+
+ftp_user = None
 
 # END OF CONFIG-PART ! -------------------------------------------------------------------------------------------------
 
@@ -102,9 +104,9 @@ def get_serv_dict():
 
 # Assigne les variables globales
 def set_config_vars():
-    global install_path_client
+    global ftp_user
     server_conf_dict = get_serv_conf()
-    install_path_client = server_conf_dict[install_path_client]
+    ftp_user = server_conf_dict['ftp_user']
 
 
 # Creer le dictionnaire client et la queue
@@ -188,7 +190,7 @@ def backup_char(local_path, remote_bck_folder, sftp_serv_address):
 
 if __name__ == '__main__':
     set_config_vars()
-    print(install_path_client)
+    print(ftp_user)
     if os.path.isfile(install_path + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
         # backup_char(install_path, backup_folder, ftp_serv)
