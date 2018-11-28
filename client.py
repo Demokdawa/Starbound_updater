@@ -14,9 +14,6 @@ import shutil
 import ftputil
 import zipfile
 
-# FTP credentails
-ftp_user = str
-ftp_pass = str
 # The folder where the zips files will be stored - make sure the permissions are correctly set - It's and FTP PATH
 zip_repo = str
 # The folder where the caracters will be backuped on the server - It's and FTP PATH
@@ -30,7 +27,7 @@ install_path_client = os.getcwd()
 # By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
 mod_path_client = install_path_client + "\\mods\\"
 # The ip and port used by grpc to connect client and server - make sure to open the port on your firewall
-grpc_connect = '195.154.173.75:50051'
+grpc_connect = str
 
 # Variables statiques
 thread_count = 10
@@ -100,20 +97,20 @@ def get_serv_dict():
 
 
 # Assigne les variables globales
-def set_config_vars():
-    global ftp_user
-    global ftp_pass
+def set_config_vars(grpc_ip):
     global zip_repo
     global backup_folder
     global mod_path_ftp
     global ftp_serv
+    global grpc_connect
+    grpc_connect = grpc_ip + ":50051"
     server_conf_dict = get_serv_conf()
     ftp_user = server_conf_dict['ftp_user']
     ftp_pass = server_conf_dict['ftp_pass']
     zip_repo = server_conf_dict['zip_repo']
     backup_folder = server_conf_dict['backup_folder']
     mod_path_ftp = server_conf_dict['mod_path_ftp']
-    ftp_serv = ftputil.FTPHost("195.154.173.75", ftp_user, ftp_pass)
+    ftp_serv = ftputil.FTPHost(grpc_ip, ftp_user, ftp_pass)
 
 
 # Creer le dictionnaire client et la queue
@@ -195,7 +192,8 @@ def backup_char(local_path, remote_bck_folder, sftp_serv_address):
 
 
 if __name__ == '__main__':
-    set_config_vars()
+    grpc_server_ip = input("Entrez l'addresse du serveur Starbound: ")
+    set_config_vars(grpc_server_ip)
     if os.path.isfile(install_path_client + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
         backup_char(install_path_client, backup_folder, ftp_serv)
