@@ -14,26 +14,23 @@ import shutil
 import ftputil
 import zipfile
 
-# CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
-
+# FTP credentails
+ftp_user = str
+ftp_pass = str
 # The folder where the zips files will be stored - make sure the permissions are correctly set - It's and FTP PATH
-# zip_repo = '/starbound/zips/'
+zip_repo = str
 # The folder where the caracters will be backuped on the server - It's and FTP PATH
-# backup_folder = '/starbound/backups/'
+backup_folder = str
+# The folder where the mod files are located - aka starbound server mod folder - It's and FTP PATH
+mod_path_ftp = str
 # Specify the address, user, and password to access ftp
-# ftp_serv = ftputil.FTPHost("195.154.173.75", "starb-ftp", "Blackstones32")
+ftp_serv = str
 # By default, the root directory where the starbound client files are located - NO CHANGES NEEDED
 install_path_client = os.getcwd()
 # By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
 mod_path_client = install_path_client + "\\mods\\"
-# The folder where the mod files are located - aka starbound server mod folder - It's and FTP PATH
-# mod_path_server = "/starbound_server/mods/"
 # The ip and port used by grpc to connect client and server - make sure to open the port on your firewall
 grpc_connect = '195.154.173.75:50051'
-
-ftp_user = None
-
-# END OF CONFIG-PART ! -------------------------------------------------------------------------------------------------
 
 # Variables statiques
 thread_count = 10
@@ -105,8 +102,18 @@ def get_serv_dict():
 # Assigne les variables globales
 def set_config_vars():
     global ftp_user
+    global ftp_pass
+    global zip_repo
+    global backup_folder
+    global mod_path_ftp
+    global ftp_serv
     server_conf_dict = get_serv_conf()
     ftp_user = server_conf_dict['ftp_user']
+    ftp_pass = server_conf_dict['ftp_pass']
+    zip_repo = server_conf_dict['zip_repo']
+    backup_folder = server_conf_dict['backup_folder']
+    mod_path_ftp = server_conf_dict['mod_path_ftp']
+    ftp_serv = ftputil.FTPHost("195.154.173.75", ftp_user, ftp_pass)
 
 
 # Creer le dictionnaire client et la queue
@@ -118,7 +125,6 @@ def build_client_dict(target_path):
     thread_creator(hash_queue, thread_count, hashtotal)
     hash_queue.join()
     print("Done !")
-    print(hash_dict)
     return hash_dict
 
 
@@ -190,15 +196,13 @@ def backup_char(local_path, remote_bck_folder, sftp_serv_address):
 
 if __name__ == '__main__':
     set_config_vars()
-    print(ftp_user)
-    if os.path.isfile(install_path + "\\win64\\" + "starbound.exe"):
+    if os.path.isfile(install_path_client + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
-        # backup_char(install_path, backup_folder, ftp_serv)
-        # client_dict = build_client_dict(mod_path_client)
-        # serv_dict = get_serv_dict()
-        # print(serv_dict)
-        # remove_extra_files(mod_path_client, client_dict, serv_dict)
-        # download_extra_files(mod_path_client, mod_path_server, zip_repo, client_dict, serv_dict, ftp_serv)
+        backup_char(install_path_client, backup_folder, ftp_serv)
+        client_dict = build_client_dict(mod_path_client)
+        serv_dict = get_serv_dict()
+        remove_extra_files(mod_path_client, client_dict, serv_dict)
+        download_extra_files(mod_path_client, mod_path_ftp, zip_repo, client_dict, serv_dict, ftp_serv)
         print("Update done !", flush=True)
     else:
         print("Starbound installation folder not found", flush=True)
