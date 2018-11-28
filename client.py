@@ -21,9 +21,9 @@ import zipfile
 # The folder where the caracters will be backuped on the server - It's and FTP PATH
 # backup_folder = '/starbound/backups/'
 # Specify the address, user, and password to access ftp
-ftp_serv = ftputil.FTPHost("195.154.173.75", "starb-ftp", "Blackstones32")
+# ftp_serv = ftputil.FTPHost("195.154.173.75", "starb-ftp", "Blackstones32")
 # By default, the root directory where the starbound client files are located - NO CHANGES NEEDED
-# install_path = os.getcwd()
+install_path_client = ""
 # By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
 # mod_path_client = install_path + "\\mods\\"
 # The folder where the mod files are located - aka starbound server mod folder - It's and FTP PATH
@@ -98,6 +98,13 @@ def get_serv_dict():
     serv_dict_build = dict(response.dictionary)
     print("Done !")
     return serv_dict_build
+
+
+# Assigne les variables globales
+def set_config_vars():
+    global install_path_client
+    server_conf_dict = get_serv_conf()
+    install_path_client = server_conf_dict[install_path_client]
 
 
 # Creer le dictionnaire client et la queue
@@ -180,10 +187,10 @@ def backup_char(local_path, remote_bck_folder, sftp_serv_address):
 
 
 if __name__ == '__main__':
+    set_config_vars()
+    print(install_path_client)
     if os.path.isfile(install_path + "\\win64\\" + "starbound.exe"):
         print("Starbound installation detected !", flush=True)
-        serv_conf = get_serv_conf()
-        print(serv_conf)
         # backup_char(install_path, backup_folder, ftp_serv)
         # client_dict = build_client_dict(mod_path_client)
         # serv_dict = get_serv_dict()

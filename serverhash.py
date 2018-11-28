@@ -42,7 +42,7 @@ def build_conf_dict():
             "ftp_pass": ftp_pass,
             "zip_repo": zip_repo,
             "backup_folder": backup_folder,
-            "install_path": install_path_client,
+            "install_path_client": 'install_path_client',
             "mod_path_client": mod_path_client,
             "mod_path_ftp": mod_path_ftp
     }
