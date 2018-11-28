@@ -13,12 +13,40 @@ import starbound_pb2_grpc
 
 # The folder where the mod files are located - aka starbound server mod folder
 mod_path = '/home/starb-ftp/starbound_server/mods'
+# The folder where the mod files are located - aka starbound server mod folder - It's and FTP PATH
+mod_path_ftp = "/starbound_server/mods/"
 # The port used by grpc to connect client and server - make sure to open it on your firewall
 grpc_port = '[::]:50051'
+# The user used to connect to the ftp
+ftp_user = "starb-ftp"
+# The password used to connect to the ftp
+ftp_pass = "Blackstones32"
+# The folder where the zips files will be stored - make sure the permissions are correctly set - It's and FTP PATH
+zip_repo = '/starbound/zips/'
+# The folder where the caracters will be backuped on the server - It's and FTP PATH
+backup_folder = '/starbound/backups/'
+# By default, the root directory where the starbound client files are located - NO CHANGES NEEDED
+install_path_client = os.getcwd()
+# By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
+mod_path_client = install_path_client + "\\mods\\"
+
 
 # END OF CONFIG-PART ! -------------------------------------------------------------------------------------------------
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
+
+
+def build_conf_dict():
+    conf_dict = {
+            "ftp_user": ftp_user,
+            "ftp_pass": ftp_pass,
+            "zip_repo": zip_repo,
+            "backup_folder": backup_folder,
+            "install_path": install_path_client,
+            "mod_path_client": mod_path_client,
+            "mod_path_ftp": mod_path_ftp
+    }
+    return conf_dict
 
 
 def build_server_dict():
@@ -39,17 +67,17 @@ def build_server_dict():
 class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     def send_dict(self, request, context):
-        random_dict = build_server_dict()
-        print(random_dict)
-        return starbound_pb2.MyDict(dictionary=random_dict)
+        builded_server_dict = build_server_dict()
+        print(builded_server_dict)
+        return starbound_pb2.MyDict(dictionary=builded_server_dict)
 
 
 class GetConfigServicer(starbound_pb2_grpc.GetConfigServicer):
 
     def send_config(self, request, context):
-        random_dict = build_server_dict()
-        print(random_dict)
-        return starbound_pb2.MyConfig(dictionary=random_dict)
+        builded_conf_dict = build_conf_dict()
+        print(builded_conf_dict)
+        return starbound_pb2.MyConfig(dictionary=builded_conf_dict)
 
 
 def serve():

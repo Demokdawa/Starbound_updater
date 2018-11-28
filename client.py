@@ -17,17 +17,17 @@ import zipfile
 # CONFIG-PART | THAT IS THE ONLY LINES YOU HAVE TO MODIFY TO CONFIGURE THE ZIP CREATOR----------------------------------
 
 # The folder where the zips files will be stored - make sure the permissions are correctly set - It's and FTP PATH
-zip_repo = '/starbound/zips/'
+# zip_repo = '/starbound/zips/'
 # The folder where the caracters will be backuped on the server - It's and FTP PATH
-backup_folder = '/starbound/backups/'
+# backup_folder = '/starbound/backups/'
 # Specify the address, user, and password to access ftp
 ftp_serv = ftputil.FTPHost("195.154.173.75", "starb-ftp", "Blackstones32")
 # By default, the root directory where the starbound client files are located - NO CHANGES NEEDED
-install_path = os.getcwd()
+# install_path = os.getcwd()
 # By default, the directory where the mods files will be downloaded for the client - NO CHANGES NEEDED
-mod_path_client = install_path + "\\mods\\"
+# mod_path_client = install_path + "\\mods\\"
 # The folder where the mod files are located - aka starbound server mod folder - It's and FTP PATH
-mod_path_server = "/starbound_server/mods/"
+# mod_path_server = "/starbound_server/mods/"
 # The ip and port used by grpc to connect client and server - make sure to open the port on your firewall
 grpc_connect = '195.154.173.75:50051'
 
