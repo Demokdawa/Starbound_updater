@@ -43,6 +43,9 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
         print(random_dict)
         return starbound_pb2.MyDict(dictionary=random_dict)
 
+
+class GetConfigServicer(starbound_pb2_grpc.GetConfigServicer):
+
     def send_config(self, request, context):
         random_dict = build_server_dict()
         print(random_dict)
@@ -52,7 +55,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     starbound_pb2_grpc.add_DictSenderServicer_to_server(DictSenderServicer(), server)
-    starbound_pb2_grpc.add_GetConfigServicer_to_server(DictSenderServicer(), server)
+    starbound_pb2_grpc.add_GetConfigServicer_to_server(GetConfigServicer(), server)
     server.add_insecure_port(grpc_port)
     server.start()
     print("Server started !")
