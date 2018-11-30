@@ -2,7 +2,7 @@
 
 Welcome to the Starbound_updater project page !
 
-Requirements to run the server :
+<u>Requirements to run the server :</u>
 
 - GRPC
 - Checksumdir
