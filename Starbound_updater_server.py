@@ -61,7 +61,7 @@ class DictSenderServicer(starbound_pb2_grpc.DictSenderServicer):
 
     def send_dict(self, request, context):
         builded_server_dict = build_server_dict()
-        print(builded_server_dict)
+        print('[' + time.strftime("%H:%M:%S") + ']' + ' Mods dict sent !')
         return starbound_pb2.MyDict(dictionary=builded_server_dict)
 
 
@@ -69,7 +69,7 @@ class GetConfigServicer(starbound_pb2_grpc.GetConfigServicer):
 
     def send_config(self, request, context):
         builded_conf_dict = build_conf_dict()
-        print(builded_conf_dict)
+        print('[' + time.strftime("%H:%M:%S") + ']' + ' Server conf sent !')
         return starbound_pb2.MyConfig(dictionary=builded_conf_dict)
 
 
