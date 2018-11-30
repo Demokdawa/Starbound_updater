@@ -18,9 +18,9 @@ mod_path_ftp = "/starbound_server/mods/"
 # The port used by grpc to connect client and server - make sure to open it on your firewall
 grpc_port = '[::]:50051'
 # The user used to connect to the ftp
-ftp_user = "starb-ftp"
+ftp_user = ""
 # The password used to connect to the ftp
-ftp_pass = "Blackstones32"
+ftp_pass = ""
 # The folder where the zips files will be stored - make sure the permissions are correctly set - It's and FTP PATH
 zip_repo = '/starbound/zips/'
 # The folder where the caracters will be backuped on the server - It's and FTP PATH
